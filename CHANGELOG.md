@@ -11,6 +11,15 @@
 
 ---
 
+## [1.0.2] - 2026-02-04
+
+### Fixed
+- GitHub Actions CI/CDワークフローのNode.jsバージョンを18から20に更新
+- Vite 7.3.1の要件（Node.js 20.19+または22.12+）に対応
+- CI実行時の「failed to load config from vite.config.ts」エラーを解決
+
+---
+
 ## [1.0.1] - 2026-02-04
 
 ### Fixed
@@ -66,6 +75,7 @@
 
 ## リンク
 
-- [Unreleased]: https://github.com/tanashou1/factorization-game/compare/v1.0.1...HEAD
+- [Unreleased]: https://github.com/tanashou1/factorization-game/compare/v1.0.2...HEAD
+- [1.0.2]: https://github.com/tanashou1/factorization-game/compare/v1.0.1...v1.0.2
 - [1.0.1]: https://github.com/tanashou1/factorization-game/compare/v1.0.0...v1.0.1
 - [1.0.0]: https://github.com/tanashou1/factorization-game/releases/tag/v1.0.0
