@@ -5,7 +5,7 @@ import {
   createInitialState,
   moveAllTiles,
   moveSingleTile,
-  processMerges,
+  processOneMergeStep,
   spawnTile,
   createEmptyBoard,
 } from './utils/gameLogic';
@@ -43,7 +43,7 @@ function App() {
     }
   };
 
-  const handleSwipe = (direction: Direction, tileId?: number) => {
+  const handleSwipe = async (direction: Direction, tileId?: number) => {
     if (isAnimating) return;
 
     setIsAnimating(true);
@@ -64,56 +64,59 @@ function App() {
     setGameState(newState);
 
     // 少し待ってから合体処理
-    setTimeout(() => {
-      const mergeResult = processMerges(newState);
-      
-      if (mergeResult.merged) {
-        setChainCount(mergeResult.chainCount);
+    setTimeout(async () => {
+      let currentState = newState;
+      let chainNumber = 1;
+      let totalScore = 0;
+      let hasMoreMerges = true;
+      let allRemovedTiles: number[] = [];
+
+      // 連鎖を500msごとに1ステップずつ処理
+      while (hasMoreMerges) {
+        const stepResult = processOneMergeStep(currentState, chainNumber);
         
-        // チェインカウンター表示
-        setTimeout(() => {
-          setChainCount(0);
-        }, 1000);
-
-        // スコアを更新
-        newState.score += mergeResult.score;
-      }
-
-      // タイルを削除
-      if (mergeResult.removedTiles.length > 0) {
-        newState.tiles = newState.tiles.filter(
-          t => !mergeResult.removedTiles.includes(t.id)
-        );
-      }
-
-      // タイルの値を更新
-      mergeResult.changedTiles.forEach((value, id) => {
-        const tile = newState.tiles.find(t => t.id === id);
-        if (tile) {
-          tile.value = value;
+        if (!stepResult.merged) {
+          hasMoreMerges = false;
+          break;
         }
-      });
 
-      // ボードを再構築
-      const updatedBoard = createEmptyBoard(params.boardSize);
-      newState.tiles.forEach(tile => {
-        updatedBoard[tile.position.row][tile.position.col] = tile;
-      });
-      newState.board = updatedBoard;
+        // チェインカウンター表示
+        setChainCount(chainNumber);
+        
+        // スコアを加算
+        totalScore += stepResult.score;
+        allRemovedTiles.push(...stepResult.removedTiles);
+        
+        // 新しい状態を適用
+        currentState = stepResult.newState;
+        currentState.score = newState.score + totalScore;
+        
+        setGameState({ ...currentState });
 
-      setGameState({ ...newState });
+        // 次の反応まで500ms待機
+        if (hasMoreMerges) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+        chainNumber++;
+      }
+
+      // チェインカウンター非表示
+      setTimeout(() => {
+        setChainCount(0);
+      }, 1000);
 
       // k回移動ごとまたはタイルが消滅したら新タイル生成
-      if (newState.moveCount % params.spawnInterval === 0 || mergeResult.removedTiles.length > 0) {
+      if (currentState.moveCount % params.spawnInterval === 0 || allRemovedTiles.length > 0) {
         setTimeout(() => {
-          const tile = spawnTile(newState.board, params.maxPrime);
+          const tile = spawnTile(currentState.board, params.maxPrime);
           if (tile) {
-            const spawnBoard = newState.board.map(row => [...row]);
+            const spawnBoard = currentState.board.map(row => [...row]);
             spawnBoard[tile.position.row][tile.position.col] = tile;
             setGameState({
-              ...newState,
+              ...currentState,
               board: spawnBoard,
-              tiles: [...newState.tiles, tile],
+              tiles: [...currentState.tiles, tile],
             });
           }
         }, 300);

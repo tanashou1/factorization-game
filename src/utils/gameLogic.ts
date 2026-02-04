@@ -1,4 +1,4 @@
-import { Tile, GameState, GameParams, Direction, MergeResult } from '../types';
+import { Tile, GameState, GameParams, Direction, MergeResult, MergeStep } from '../types';
 import { generateTileValue, isDivisor } from './math';
 
 let nextTileId = 1;
@@ -193,18 +193,38 @@ export function processMerges(state: GameState): MergeResult {
     score: 0,
     removedTiles: [],
     changedTiles: new Map(),
+    steps: [],
   };
   
   let currentState = { ...state };
   let chainMultiplier = 1;
+  let chainNumber = 1;
   
   while (true) {
-    const mergeOccurred = processOneMergeRound(currentState, result, chainMultiplier);
-    if (!mergeOccurred) break;
+    const stepResult = processOneMergeRound(currentState, chainMultiplier);
+    if (!stepResult.mergeOccurred) break;
     
     result.merged = true;
     result.chainCount++;
+    result.score += stepResult.score;
+    
+    // 各ステップの情報を記録
+    const step: MergeStep = {
+      removedTiles: stepResult.removedTiles,
+      changedTiles: stepResult.changedTiles,
+      score: stepResult.score,
+      chainNumber: chainNumber,
+    };
+    result.steps.push(step);
+    
+    // 全体の削除・変更タイルを記録
+    result.removedTiles.push(...stepResult.removedTiles);
+    stepResult.changedTiles.forEach((value, id) => {
+      result.changedTiles.set(id, value);
+    });
+    
     chainMultiplier *= 2;
+    chainNumber++;
   }
   
   return result;
@@ -215,12 +235,17 @@ export function processMerges(state: GameState): MergeResult {
  */
 function processOneMergeRound(
   state: GameState,
-  result: MergeResult,
   chainMultiplier: number
-): boolean {
+): {
+  mergeOccurred: boolean;
+  score: number;
+  removedTiles: number[];
+  changedTiles: Map<number, number>;
+} {
   let mergeOccurred = false;
   const tilesToRemove: number[] = [];
   const tilesToChange = new Map<number, number>();
+  let score = 0;
   
   // 小さい値のタイルから順に処理
   const sortedTiles = [...state.tiles].sort((a, b) => a.value - b.value);
@@ -236,7 +261,7 @@ function processOneMergeRound(
       // 同じ値のタイル同士
       if (tile.value === adjacent.value) {
         tilesToRemove.push(tile.id, adjacent.id);
-        result.score += (tile.value + adjacent.value) * chainMultiplier;
+        score += (tile.value + adjacent.value) * chainMultiplier;
         mergeOccurred = true;
         break;
       }
@@ -246,12 +271,12 @@ function processOneMergeRound(
         const newValue = adjacent.value / tile.value;
         tilesToRemove.push(tile.id);
         tilesToChange.set(adjacent.id, newValue);
-        result.score += tile.value * chainMultiplier;
+        score += tile.value * chainMultiplier;
         
         // 値が1になったら消滅
         if (newValue === 1) {
           tilesToRemove.push(adjacent.id);
-          result.score += adjacent.value * chainMultiplier;
+          score += adjacent.value * chainMultiplier;
         }
         
         mergeOccurred = true;
@@ -262,12 +287,12 @@ function processOneMergeRound(
         const newValue = tile.value / adjacent.value;
         tilesToRemove.push(adjacent.id);
         tilesToChange.set(tile.id, newValue);
-        result.score += adjacent.value * chainMultiplier;
+        score += adjacent.value * chainMultiplier;
         
         // 値が1になったら消滅
         if (newValue === 1) {
           tilesToRemove.push(tile.id);
-          result.score += tile.value * chainMultiplier;
+          score += tile.value * chainMultiplier;
         }
         
         mergeOccurred = true;
@@ -280,14 +305,12 @@ function processOneMergeRound(
   if (mergeOccurred) {
     // タイルを削除
     state.tiles = state.tiles.filter(t => !tilesToRemove.includes(t.id));
-    result.removedTiles.push(...tilesToRemove);
     
     // タイルの値を変更
     tilesToChange.forEach((newValue, tileId) => {
       const tile = state.tiles.find(t => t.id === tileId);
       if (tile) {
         tile.value = newValue;
-        result.changedTiles.set(tileId, newValue);
       }
     });
     
@@ -299,7 +322,12 @@ function processOneMergeRound(
     state.board = newBoard;
   }
   
-  return mergeOccurred;
+  return {
+    mergeOccurred,
+    score,
+    removedTiles: tilesToRemove,
+    changedTiles: tilesToChange,
+  };
 }
 
 /**
@@ -329,5 +357,36 @@ export function moveSingleTile(
     ...state,
     board: newBoard,
     moveCount: state.moveCount + 1,
+  };
+}
+
+/**
+ * 1ステップ分の合体処理を実行（App.tsxから呼ばれる）
+ */
+export function processOneMergeStep(
+  state: GameState,
+  chainNumber: number
+): {
+  merged: boolean;
+  score: number;
+  removedTiles: number[];
+  changedTiles: Map<number, number>;
+  newState: GameState;
+} {
+  const chainMultiplier = Math.pow(2, chainNumber - 1);
+  const currentState = {
+    ...state,
+    board: state.board.map(row => [...row]),
+    tiles: [...state.tiles],
+  };
+  
+  const stepResult = processOneMergeRound(currentState, chainMultiplier);
+  
+  return {
+    merged: stepResult.mergeOccurred,
+    score: stepResult.score,
+    removedTiles: stepResult.removedTiles,
+    changedTiles: stepResult.changedTiles,
+    newState: currentState,
   };
 }
