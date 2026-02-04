@@ -11,6 +11,17 @@
 
 ---
 
+## [1.0.1] - 2026-02-04
+
+### Fixed
+- CI/CDワークフローで発生していた依存関係ロックファイルエラーを修正
+- `.gitignore`から`package-lock.json`を除外し、再現可能なビルドを保証
+
+### Changed
+- `package-lock.json`をバージョン管理に追加
+
+---
+
 ## [1.0.0] - 2026-02-04
 
 ### Added
@@ -55,5 +66,6 @@
 
 ## リンク
 
-- [Unreleased]: https://github.com/tanashou1/factorization-game/compare/v1.0.0...HEAD
+- [Unreleased]: https://github.com/tanashou1/factorization-game/compare/v1.0.1...HEAD
+- [1.0.1]: https://github.com/tanashou1/factorization-game/compare/v1.0.0...v1.0.1
 - [1.0.0]: https://github.com/tanashou1/factorization-game/releases/tag/v1.0.0
