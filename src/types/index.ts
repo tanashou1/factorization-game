@@ -21,10 +21,18 @@ export interface GameParams {
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
+export interface MergeStep {
+  removedTiles: number[];
+  changedTiles: Map<number, number>; // id -> new value
+  score: number;
+  chainNumber: number;
+}
+
 export interface MergeResult {
   merged: boolean;
   chainCount: number;
   score: number;
   removedTiles: number[];
   changedTiles: Map<number, number>; // id -> new value
+  steps: MergeStep[]; // 各連鎖ステップの情報
 }
