@@ -1,0 +1,31 @@
+{
+  "name": "factorization-game",
+  "version": "1.0.0",
+  "description": "素因数分解をベースにした数字パズルゲーム - A number puzzle game based on prime factorization",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specify\" && exit 1",
+    "build": "echo \"Build script not yet configured\"",
+    "dev": "echo \"Dev server not yet configured\"",
+    "lint": "echo \"Lint script not yet configured\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanashou1/factorization-game.git"
+  },
+  "keywords": [
+    "game",
+    "puzzle",
+    "factorization",
+    "math",
+    "browser-game",
+    "react",
+    "typescript"
+  ],
+  "author": "tanashou1",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tanashou1/factorization-game/issues"
+  },
+  "homepage": "https://tanashou1.github.io/factorization-game/"
+}

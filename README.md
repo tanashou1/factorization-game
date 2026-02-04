@@ -178,3 +178,22 @@ n×nマスの盤面上で、数字タイルをスライドさせて操作する�
 - メインブランチへのプッシュで自動デプロイ（GitHub Actions）
 - デプロイURL: https://tanashou1.github.io/factorization-game/
 
+## 🤝 貢献
+
+プロジェクトへの貢献を歓迎します！詳細は以下のドキュメントを参照してください：
+
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - 貢献ガイド
+- **[.github/copilot-instructions.md](.github/copilot-instructions.md)** - エージェント向けカスタムインストラクション
+- **[TESTING.md](TESTING.md)** - テスト手順ガイド
+- **[CHANGELOG.md](CHANGELOG.md)** - 変更履歴
+
+### 重要なルール
+
+1. **セマンティックバージョニング**: すべてのPRでバージョンを更新してください
+2. **バージョン表示**: アプリ画面にバージョンを表示してください
+3. **テスト**: 変更前に必ずテストを実施してください
+
+### バージョン情報
+
+現在のバージョン: **v1.0.0**
+
