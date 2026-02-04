@@ -87,18 +87,18 @@ function App() {
         totalScore += stepResult.score;
         allRemovedTiles.push(...stepResult.removedTiles);
         
-        // 新しい状態を適用
-        currentState = stepResult.newState;
-        currentState.score = newState.score + totalScore;
+        // 新しい状態を適用（スコアも含めて新しいオブジェクトを作成）
+        currentState = {
+          ...stepResult.newState,
+          score: newState.score + totalScore,
+        };
         
         setGameState({ ...currentState });
-
-        // 次の反応まで500ms待機
-        if (hasMoreMerges) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
         
         chainNumber++;
+
+        // 次の反応まで500ms待機
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
 
       // チェインカウンター非表示
