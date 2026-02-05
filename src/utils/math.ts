@@ -27,8 +27,9 @@ export function generateTileValue(maxPrime: number): number {
   
   const MAX_VALUE = 999999;
   
-  // 1～primes.length個の素数をランダムに選択（重複を許す）
-  const count = Math.floor(Math.random() * primes.length) + 1;
+  // 1～max(primes.length, 3)個の素数をランダムに選択（重複を許す）
+  const maxCount = Math.max(primes.length, 3);
+  const count = Math.floor(Math.random() * maxCount) + 1;
   const selectedPrimes: number[] = [];
   
   for (let i = 0; i < count; i++) {

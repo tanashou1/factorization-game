@@ -10,6 +10,7 @@ import {
   spawnTile,
   createEmptyBoard,
   getNextTileId,
+  checkGameOver,
 } from './utils/gameLogic';
 import { getNextPrime } from './utils/math';
 import packageJson from '../package.json';
@@ -21,6 +22,9 @@ const defaultParams: GameParams = {
   spawnInterval: 3,
   maxPrime: 7,
 };
+
+// アニメーション遅延定数
+const GAME_OVER_CHECK_DELAY = 100; // ゲームオーバーチェック前の待機時間（ms）- タイル生成アニメーション完了を待つ
 
 function App() {
   const [gameMode, setGameMode] = useState<GameMode | null>(null);
@@ -84,7 +88,7 @@ function App() {
       // Level up!
       const currentLevel = gameState.currentLevel || 2;
       const nextLevel = getNextPrime(currentLevel);
-      const nextTargetScore = nextLevel * nextLevel * nextLevel;
+      const nextTargetScore = nextLevel ** 4;
       
       setLevelUpMessage(`Level ${nextLevel}`);
       
@@ -261,10 +265,39 @@ function App() {
           if (tile) {
             const spawnBoard = currentState.board.map(row => [...row]);
             spawnBoard[tile.position.row][tile.position.col] = tile;
-            setGameState({
+            const newStateWithTile = {
               ...currentState,
               board: spawnBoard,
               tiles: [...currentState.tiles, tile],
+            };
+            setGameState(newStateWithTile);
+            
+            // ゲームオーバーチェック（新タイル生成後）
+            setTimeout(() => {
+              if (checkGameOver(newStateWithTile)) {
+                setGameState({
+                  ...newStateWithTile,
+                  isGameOver: true,
+                });
+              }
+            }, GAME_OVER_CHECK_DELAY);
+          } else {
+            // タイルを生成できなかった場合もゲームオーバーチェック
+            if (checkGameOver(currentState)) {
+              setGameState({
+                ...currentState,
+                isGameOver: true,
+              });
+            }
+          }
+        }, 300);
+      } else {
+        // タイルを生成しない場合もゲームオーバーチェック
+        setTimeout(() => {
+          if (checkGameOver(currentState)) {
+            setGameState({
+              ...currentState,
+              isGameOver: true,
             });
           }
         }, 300);
@@ -326,6 +359,24 @@ function App() {
       {levelUpMessage && (
         <div className="level-up-message">
           {levelUpMessage}
+        </div>
+      )}
+
+      {gameState.isGameOver && (
+        <div className="game-over-overlay">
+          <div className="game-over-content">
+            <h2>
+              <span aria-hidden="true">🎮</span>
+              <span> ゲームオーバー</span>
+            </h2>
+            <p>盤面が満杯で、これ以上反応ができません</p>
+            <div className="final-score">
+              最終スコア: {gameState.score}
+            </div>
+            <button onClick={handleReset}>
+              🔄 リトライ
+            </button>
+          </div>
         </div>
       )}
 

@@ -130,10 +130,64 @@ export function createInitialState(params: GameParams, mode: GameMode = 'free'):
   // Challenge mode specific initialization
   if (mode === 'challenge') {
     state.currentLevel = 2; // Start from level 2 (first prime)
-    state.targetScore = 8; // 2^3 = 8
+    state.targetScore = 16; // 2^4 = 16
   }
   
   return state;
+}
+
+/**
+ * 盤面が満杯かどうかをチェック
+ */
+function isBoardFull(board: (Tile | null)[][]): boolean {
+  for (let row = 0; row < board.length; row++) {
+    for (let col = 0; col < board[row].length; col++) {
+      if (board[row][col] === null) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+/**
+ * 有効な反応が可能かチェック
+ */
+function canMakeAnyReaction(state: GameState): boolean {
+  // 盤面が満杯でなければまだゲームを続けられる
+  if (!isBoardFull(state.board)) {
+    return true;
+  }
+  
+  // 各タイルについて、隣接タイルとの反応可能性をチェック
+  for (const tile of state.tiles) {
+    const adjacentTiles = getAdjacentTiles(tile, state.board);
+    
+    for (const adjacent of adjacentTiles) {
+      // 同じ値のタイル同士
+      if (tile.value === adjacent.value) {
+        return true;
+      }
+      
+      // 約数関係
+      if (tile.value < adjacent.value && isDivisor(tile.value, adjacent.value)) {
+        return true;
+      }
+      
+      if (adjacent.value < tile.value && isDivisor(adjacent.value, tile.value)) {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * ゲームオーバーのチェック
+ */
+export function checkGameOver(state: GameState): boolean {
+  return !canMakeAnyReaction(state);
 }
 
 /**
@@ -348,12 +402,12 @@ function processOneMergeRound(
         tilesToRemove.push(tile.id);
         tilesToChange.set(adjacent.id, newValue);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
-        score += tile.value * chainMultiplier;
+        // スコアは反応した両方のタイルの値の合計
+        score += (tile.value + adjacent.value) * chainMultiplier;
         
-        // 値が1になったら消滅
+        // 値が1になったら消滅（スコアは上記で既に加算済み）
         if (newValue === 1) {
           tilesToRemove.push(adjacent.id);
-          score += adjacent.value * chainMultiplier;
         }
         
         mergeOccurred = true;
@@ -365,12 +419,12 @@ function processOneMergeRound(
         tilesToRemove.push(adjacent.id);
         tilesToChange.set(tile.id, newValue);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
-        score += adjacent.value * chainMultiplier;
+        // スコアは反応した両方のタイルの値の合計
+        score += (tile.value + adjacent.value) * chainMultiplier;
         
-        // 値が1になったら消滅
+        // 値が1になったら消滅（スコアは上記で既に加算済み）
         if (newValue === 1) {
           tilesToRemove.push(tile.id);
-          score += tile.value * chainMultiplier;
         }
         
         mergeOccurred = true;
