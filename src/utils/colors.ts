@@ -11,19 +11,19 @@ interface RGB {
 
 /**
  * 素数に割り当てる基本色のパレット
- * 視覚的に区別しやすい色を選定
+ * 視覚的に区別しやすく、明るく鮮やかな色を選定
  */
 const PRIME_COLOR_PALETTE: RGB[] = [
-  { r: 255, g: 99, b: 132 },   // 赤系
-  { r: 54, g: 162, b: 235 },   // 青系
-  { r: 255, g: 206, b: 86 },   // 黄系
-  { r: 75, g: 192, b: 192 },   // 青緑系
-  { r: 153, g: 102, b: 255 },  // 紫系
-  { r: 255, g: 159, b: 64 },   // オレンジ系
-  { r: 199, g: 199, b: 199 },  // グレー系
-  { r: 83, g: 211, b: 87 },    // 緑系
-  { r: 237, g: 100, b: 166 },  // ピンク系
-  { r: 131, g: 147, b: 202 },  // ラベンダー系
+  { r: 255, g: 120, b: 150 },  // 明るい赤系
+  { r: 100, g: 180, b: 255 },  // 明るい青系
+  { r: 255, g: 220, b: 100 },  // 明るい黄系
+  { r: 100, g: 220, b: 220 },  // 明るい青緑系
+  { r: 180, g: 130, b: 255 },  // 明るい紫系
+  { r: 255, g: 180, b: 100 },  // 明るいオレンジ系
+  { r: 220, g: 220, b: 220 },  // 明るいグレー系
+  { r: 120, g: 230, b: 120 },  // 明るい緑系
+  { r: 255, g: 130, b: 190 },  // 明るいピンク系
+  { r: 160, g: 170, b: 230 },  // 明るいラベンダー系
 ];
 
 /**
@@ -84,41 +84,67 @@ function rgbToString(rgb: RGB): string {
 }
 
 /**
+ * 色を明るくする（輝度を上げる）
+ */
+function brightenColor(rgb: RGB, factor: number = 1.2): RGB {
+  return {
+    r: Math.min(255, Math.round(rgb.r * factor)),
+    g: Math.min(255, Math.round(rgb.g * factor)),
+    b: Math.min(255, Math.round(rgb.b * factor)),
+  };
+}
+
+/**
  * タイルの値に基づいて背景色を取得
  * 素数: パレットから色を選択
  * 合成数: 素因数の色をミックス
  */
 export function getTileColor(value: number): string {
   if (value === 1) {
-    // 1は特別な色（金色）
-    return 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
+    // 1は特別な色（明るい金色のグラデーション）
+    return 'linear-gradient(135deg, #FFE55C 0%, #FFF89A 50%, #FFD700 100%)';
   }
   
   if (isPrime(value)) {
-    // 素数の場合、単色のグラデーション
+    // 素数の場合、明るい色から基本色へのグラデーション
     const color = getPrimeColor(value);
+    const brightColor = brightenColor(color, 1.3);
     const rgb = rgbToString(color);
-    // 少し暗めの色でグラデーション
-    const darkColor = rgbToString({
-      r: Math.round(color.r * 0.8),
-      g: Math.round(color.g * 0.8),
-      b: Math.round(color.b * 0.8),
-    });
-    return `linear-gradient(135deg, ${rgb} 0%, ${darkColor} 100%)`;
+    const brightRgb = rgbToString(brightColor);
+    return `linear-gradient(135deg, ${brightRgb} 0%, ${rgb} 100%)`;
   }
   
-  // 合成数の場合、素因数の色をミックス
+  // 合成数の場合、素因数の色を混ぜたグラデーション
   const primeFactors = getUniquePrimeFactors(value);
   const colors = primeFactors.map(prime => getPrimeColor(prime));
-  const mixedColor = mixColors(colors);
-  const rgb = rgbToString(mixedColor);
   
-  // 混ぜた色でグラデーション
-  const darkColor = rgbToString({
-    r: Math.round(mixedColor.r * 0.8),
-    g: Math.round(mixedColor.g * 0.8),
-    b: Math.round(mixedColor.b * 0.8),
-  });
+  if (colors.length === 1) {
+    // 素数の累乗の場合（例: 4=2², 8=2³）
+    const color = colors[0];
+    const brightColor = brightenColor(color, 1.3);
+    const rgb = rgbToString(color);
+    const brightRgb = rgbToString(brightColor);
+    return `linear-gradient(135deg, ${brightRgb} 0%, ${rgb} 100%)`;
+  }
   
-  return `linear-gradient(135deg, ${rgb} 0%, ${darkColor} 100%)`;
+  if (colors.length === 2) {
+    // 2つの素因数の場合、両方の色をグラデーションで混ぜる
+    const color1 = colors[0];
+    const color2 = colors[1];
+    const brightColor1 = brightenColor(color1, 1.2);
+    const brightColor2 = brightenColor(color2, 1.2);
+    const rgb1 = rgbToString(brightColor1);
+    const rgb2 = rgbToString(brightColor2);
+    return `linear-gradient(135deg, ${rgb1} 0%, ${rgb2} 100%)`;
+  }
+  
+  // 3つ以上の素因数の場合、複数の色をグラデーションで混ぜる
+  const gradientStops = colors.map((color, index) => {
+    const brightColor = brightenColor(color, 1.2);
+    const rgb = rgbToString(brightColor);
+    const position = (index / (colors.length - 1)) * 100;
+    return `${rgb} ${position}%`;
+  }).join(', ');
+  
+  return `linear-gradient(135deg, ${gradientStops})`;
 }
