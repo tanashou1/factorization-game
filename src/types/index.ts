@@ -17,6 +17,8 @@ export interface GameState {
   // Challenge mode specific
   currentLevel?: number;
   targetScore?: number;
+  // Game over state
+  isGameOver?: boolean;
 }
 
 export interface GameParams {
