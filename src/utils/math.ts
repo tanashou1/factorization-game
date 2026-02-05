@@ -52,8 +52,8 @@ export function generateTileValue(maxPrime: number): number {
     }
   }
   
-  // すべての素数を取り除いても999999を超える場合（ありえないが念のため）
-  if (value > MAX_VALUE) {
+  // すべての素数を取り除いた場合、または値がまだ大きい場合は最小値を返す
+  if (primesToUse.length === 0 || value > MAX_VALUE) {
     return 2;
   }
   
