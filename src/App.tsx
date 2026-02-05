@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Board } from './components/Board';
-import { GameState, GameParams, Direction } from './types';
+import { ModeSelection } from './components/ModeSelection';
+import { GameState, GameParams, Direction, GameMode } from './types';
 import {
   createInitialState,
   moveAllTiles,
@@ -9,6 +10,7 @@ import {
   spawnTile,
   createEmptyBoard,
 } from './utils/gameLogic';
+import { getNextPrime } from './utils/math';
 import packageJson from '../package.json';
 import './App.css';
 
@@ -20,15 +22,95 @@ const defaultParams: GameParams = {
 };
 
 function App() {
+  const [gameMode, setGameMode] = useState<GameMode | null>(null);
   const [params, setParams] = useState<GameParams>(defaultParams);
-  const [gameState, setGameState] = useState<GameState>(() => createInitialState(defaultParams));
+  const [gameState, setGameState] = useState<GameState | null>(null);
   const [chainCount, setChainCount] = useState<number>(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [levelUpMessage, setLevelUpMessage] = useState<string | null>(null);
+
+  // Initialize game state when mode is selected
+  useEffect(() => {
+    if (gameMode && !gameState) {
+      const initialParams = gameMode === 'challenge' 
+        ? { ...defaultParams, maxPrime: 2 }
+        : defaultParams;
+      setParams(initialParams);
+      setGameState(createInitialState(initialParams, gameMode));
+    }
+  }, [gameMode, gameState]);
+
+  const handleModeSelection = (mode: GameMode) => {
+    setGameMode(mode);
+    const initialParams = mode === 'challenge' 
+      ? { ...defaultParams, maxPrime: 2 }
+      : defaultParams;
+    setParams(initialParams);
+    setGameState(createInitialState(initialParams, mode));
+  };
 
   const handleReset = () => {
-    setGameState(createInitialState(params));
+    if (!gameMode) return;
+    
+    if (gameMode === 'challenge') {
+      // Challenge mode: reset to level 2
+      const resetParams = { ...params, maxPrime: 2 };
+      setParams(resetParams);
+      setGameState(createInitialState(resetParams, gameMode));
+    } else {
+      // Free mode: reset with current params
+      setGameState(createInitialState(params, gameMode));
+    }
     setChainCount(0);
+    setLevelUpMessage(null);
   };
+
+  const handleBackToMenu = () => {
+    setGameMode(null);
+    setGameState(null);
+    setChainCount(0);
+    setLevelUpMessage(null);
+  };
+
+  // Check for level up in challenge mode
+  useEffect(() => {
+    if (!gameState || gameState.mode !== 'challenge') return;
+    
+    if (gameState.targetScore && gameState.score >= gameState.targetScore) {
+      // Level up!
+      const currentLevel = gameState.currentLevel || 2;
+      const nextLevel = getNextPrime(currentLevel);
+      const nextTargetScore = nextLevel * nextLevel;
+      
+      setLevelUpMessage(`レベルアップ！ レベル ${nextLevel}`);
+      
+      // Update game state with new level
+      setGameState({
+        ...gameState,
+        currentLevel: nextLevel,
+        targetScore: nextTargetScore,
+      });
+      
+      // Update params to use new maxPrime
+      setParams({
+        ...params,
+        maxPrime: nextLevel,
+      });
+      
+      // Clear level up message after 3 seconds
+      setTimeout(() => {
+        setLevelUpMessage(null);
+      }, 3000);
+    }
+  }, [gameState?.score, gameState?.targetScore]);
+
+  if (!gameMode) {
+    return <ModeSelection onSelectMode={handleModeSelection} />;
+  }
+
+  if (!gameState) {
+    return <div>Loading...</div>;
+  }
 
   const handleSpawnTile = () => {
     const tile = spawnTile(gameState.board, params.maxPrime);
@@ -159,9 +241,26 @@ function App() {
           <span style={{ fontSize: '14px', color: '#888', fontWeight: 'normal' }}>v{packageJson.version}</span>
         </div>
         <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
-          タイルをスワイプして約数で割ろう！
+          {gameMode === 'challenge' ? 'チャレンジモード - レベルを上げよう！' : 'タイルをスワイプして約数で割ろう！'}
         </p>
       </div>
+
+      {gameMode === 'challenge' && (
+        <div className="challenge-info">
+          <div className="challenge-item">
+            <div className="challenge-label">現在のレベル</div>
+            <div className="challenge-value">{gameState.currentLevel}</div>
+          </div>
+          <div className="challenge-item">
+            <div className="challenge-label">目標スコア</div>
+            <div className="challenge-value">{gameState.targetScore}</div>
+          </div>
+          <div className="challenge-item">
+            <div className="challenge-label">残り</div>
+            <div className="challenge-value">{Math.max(0, (gameState.targetScore || 0) - gameState.score)}</div>
+          </div>
+        </div>
+      )}
 
       <div className="score-display">
         <div className="score-item">
@@ -192,6 +291,12 @@ function App() {
         </div>
       )}
 
+      {levelUpMessage && (
+        <div className="level-up-message">
+          {levelUpMessage}
+        </div>
+      )}
+
       <div className="controls">
         <div className="params-grid">
           <div className="param-control">
@@ -202,6 +307,7 @@ function App() {
               max="8"
               value={params.boardSize}
               onChange={(e) => handleParamChange('boardSize', Number(e.target.value))}
+              disabled={gameMode === 'challenge'}
             />
           </div>
           <div className="param-control">
@@ -212,6 +318,7 @@ function App() {
               max="10"
               value={params.initialTiles}
               onChange={(e) => handleParamChange('initialTiles', Number(e.target.value))}
+              disabled={gameMode === 'challenge'}
             />
           </div>
           <div className="param-control">
@@ -222,33 +329,51 @@ function App() {
               max="10"
               value={params.spawnInterval}
               onChange={(e) => handleParamChange('spawnInterval', Number(e.target.value))}
+              disabled={gameMode === 'challenge'}
             />
           </div>
-          <div className="param-control">
-            <label>最大素数 (p): {params.maxPrime}</label>
-            <select
-              value={params.maxPrime}
-              onChange={(e) => handleParamChange('maxPrime', Number(e.target.value))}
-              style={{ width: '100%', padding: '8px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
-            >
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="5">5</option>
-              <option value="7">7</option>
-              <option value="11">11</option>
-              <option value="13">13</option>
-              <option value="17">17</option>
-              <option value="19">19</option>
-            </select>
-          </div>
+          {gameMode === 'free' && (
+            <div className="param-control">
+              <label>最大素数 (p): {params.maxPrime}</label>
+              <select
+                value={params.maxPrime}
+                onChange={(e) => handleParamChange('maxPrime', Number(e.target.value))}
+                style={{ width: '100%', padding: '8px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
+              >
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+                <option value="11">11</option>
+                <option value="13">13</option>
+                <option value="17">17</option>
+                <option value="19">19</option>
+              </select>
+            </div>
+          )}
+          {gameMode === 'challenge' && (
+            <div className="param-control">
+              <label>最大素数 (p): {params.maxPrime} (自動)</label>
+              <div style={{ 
+                padding: '12px', 
+                background: '#f0f0f0', 
+                borderRadius: '4px', 
+                textAlign: 'center',
+                color: '#666',
+                fontSize: '14px'
+              }}>
+                レベルに応じて自動変更
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="button-group">
           <button className="btn btn-primary" onClick={handleReset}>
             🔄 リセット
           </button>
-          <button className="btn btn-secondary" onClick={handleSpawnTile}>
-            ➕ タイル生成
+          <button className="btn btn-secondary" onClick={handleBackToMenu}>
+            🏠 メニューに戻る
           </button>
         </div>
 

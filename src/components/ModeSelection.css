@@ -1,0 +1,148 @@
+.mode-selection-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.mode-selection-container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mode-selection-container h1 {
+  text-align: center;
+  color: #333;
+  margin: 0 0 10px 0;
+  font-size: 32px;
+}
+
+.mode-selection-container h2 {
+  text-align: center;
+  color: #666;
+  margin: 0 0 30px 0;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.mode-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.mode-card {
+  background: white;
+  border: 3px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 30px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: left;
+}
+
+.mode-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.mode-card.free-mode:hover {
+  border-color: #667eea;
+  background: #f5f7ff;
+}
+
+.mode-card.challenge-mode:hover {
+  border-color: #f59e0b;
+  background: #fffbf0;
+}
+
+.mode-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.mode-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.mode-card.free-mode h3 {
+  color: #667eea;
+}
+
+.mode-card.challenge-mode h3 {
+  color: #f59e0b;
+}
+
+.mode-card p {
+  margin: 0 0 15px 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.mode-card ul {
+  margin: 0;
+  padding: 0 0 0 20px;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.mode-card ul li {
+  margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+  .mode-selection-container {
+    padding: 30px 20px;
+  }
+
+  .mode-selection-container h1 {
+    font-size: 24px;
+  }
+
+  .mode-selection-container h2 {
+    font-size: 16px;
+  }
+
+  .mode-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-card {
+    padding: 20px;
+  }
+
+  .mode-icon {
+    font-size: 36px;
+  }
+
+  .mode-card h3 {
+    font-size: 20px;
+  }
+}
