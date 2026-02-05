@@ -171,14 +171,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 48px;
+  font-size: 32px;
   font-weight: bold;
   color: #f59e0b;
-  text-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
-  background: rgba(255, 255, 255, 0.95);
-  padding: 30px 50px;
-  border-radius: 20px;
-  border: 3px solid #f59e0b;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
   z-index: 1001;
   animation: levelUpPulse 0.6s ease-out;
 }
