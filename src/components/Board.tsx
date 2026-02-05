@@ -13,6 +13,9 @@ interface BoardProps {
 export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap }) => {
   const boardRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number; tileId?: number } | null>(null);
+  
+  // Constants
+  const CELL_GAP = 10; // Gap between cells in pixels
 
   const handleTouchStart = (e: React.TouchEvent, tileId?: number) => {
     const touch = e.touches[0];
@@ -34,9 +37,8 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap }) => 
       if (!touchStart.tileId && onTap && boardRef.current) {
         const rect = boardRef.current.getBoundingClientRect();
         const cellSize = getCellSize();
-        const gap = 10;
-        const col = Math.floor((touch.clientX - rect.left - gap) / (cellSize + gap));
-        const row = Math.floor((touch.clientY - rect.top - gap) / (cellSize + gap));
+        const col = Math.floor((touch.clientX - rect.left - CELL_GAP) / (cellSize + CELL_GAP));
+        const row = Math.floor((touch.clientY - rect.top - CELL_GAP) / (cellSize + CELL_GAP));
         
         if (row >= 0 && row < size && col >= 0 && col < size) {
           onTap(row, col);
@@ -74,9 +76,8 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap }) => 
       if (!touchStart.tileId && onTap && boardRef.current) {
         const rect = boardRef.current.getBoundingClientRect();
         const cellSize = getCellSize();
-        const gap = 10;
-        const col = Math.floor((e.clientX - rect.left - gap) / (cellSize + gap));
-        const row = Math.floor((e.clientY - rect.top - gap) / (cellSize + gap));
+        const col = Math.floor((e.clientX - rect.left - CELL_GAP) / (cellSize + CELL_GAP));
+        const row = Math.floor((e.clientY - rect.top - CELL_GAP) / (cellSize + CELL_GAP));
         
         if (row >= 0 && row < size && col >= 0 && col < size) {
           onTap(row, col);
@@ -100,18 +101,16 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap }) => 
   const getCellSize = () => {
     if (!boardRef.current) return 0;
     const width = boardRef.current.offsetWidth;
-    const gap = 10;
-    return (width - (size + 1) * gap) / size;
+    return (width - (size + 1) * CELL_GAP) / size;
   };
 
   const getTileStyle = (tile: TileType): React.CSSProperties => {
     const cellSize = getCellSize();
-    const gap = 10;
     return {
       width: `${cellSize}px`,
       height: `${cellSize}px`,
-      left: `${gap + tile.position.col * (cellSize + gap)}px`,
-      top: `${gap + tile.position.row * (cellSize + gap)}px`,
+      left: `${CELL_GAP + tile.position.col * (cellSize + CELL_GAP)}px`,
+      top: `${CELL_GAP + tile.position.row * (cellSize + CELL_GAP)}px`,
       fontSize: tile.value > 999 ? '16px' : '20px',
       background: getTileColor(tile.value), // 動的に色を設定
     };

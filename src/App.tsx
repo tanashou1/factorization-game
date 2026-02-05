@@ -9,6 +9,7 @@ import {
   processOneMergeStep,
   spawnTile,
   createEmptyBoard,
+  getNextTileId,
 } from './utils/gameLogic';
 import { getNextPrime } from './utils/math';
 import packageJson from '../package.json';
@@ -138,7 +139,7 @@ function App() {
     const randomPrime = primes[Math.floor(Math.random() * primes.length)];
     
     const newTile: Tile = {
-      id: Date.now(),
+      id: getNextTileId(),
       value: randomPrime,
       position: { row, col },
       isNew: true,
