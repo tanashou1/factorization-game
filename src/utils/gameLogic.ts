@@ -5,7 +5,7 @@ import { generateTileValue, isDivisor } from './math';
 // React StrictModeでの二重マウント問題を回避
 // タイムスタンプとカウンターを組み合わせて衝突を防ぐ（JavaScript安全整数範囲内）
 let idCounter = 0;
-function getNextTileId(): number {
+export function getNextTileId(): number {
   const timestamp = Date.now(); // ミリ秒のタイムスタンプ
   const counter = (idCounter++) % 1000; // 0-999のカウンター
   return timestamp * 1000 + counter; // 安全な範囲内で一意性を保証

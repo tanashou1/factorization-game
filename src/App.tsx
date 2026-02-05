@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Board } from './components/Board';
 import { ModeSelection } from './components/ModeSelection';
-import { GameState, GameParams, Direction, GameMode } from './types';
+import { GameState, GameParams, Direction, GameMode, Tile } from './types';
 import {
   createInitialState,
   moveAllTiles,
@@ -9,6 +9,7 @@ import {
   processOneMergeStep,
   spawnTile,
   createEmptyBoard,
+  getNextTileId,
 } from './utils/gameLogic';
 import { getNextPrime } from './utils/math';
 import packageJson from '../package.json';
@@ -123,6 +124,35 @@ function App() {
         tiles: [...gameState.tiles, tile],
       });
     }
+  };
+
+  const handleTap = (row: number, col: number) => {
+    if (isAnimating) return;
+    
+    // その位置が空いているか確認
+    if (gameState.board[row][col] !== null) {
+      return;
+    }
+    
+    // ランダムな素数でタイルを生成
+    const primes = [2, 3, 5, 7, 11, 13, 17, 19].filter(p => p <= params.maxPrime);
+    const randomPrime = primes[Math.floor(Math.random() * primes.length)];
+    
+    const newTile: Tile = {
+      id: getNextTileId(),
+      value: randomPrime,
+      position: { row, col },
+      isNew: true,
+    };
+    
+    const newBoard = gameState.board.map(row => [...row]);
+    newBoard[row][col] = newTile;
+    
+    setGameState({
+      ...gameState,
+      board: newBoard,
+      tiles: [...gameState.tiles, newTile],
+    });
   };
 
   const handleSwipe = async (direction: Direction, tileId?: number) => {
@@ -274,6 +304,7 @@ function App() {
           size={params.boardSize}
           tiles={gameState.tiles}
           onSwipe={handleSwipe}
+          onTap={handleTap}
         />
       </div>
 
@@ -374,6 +405,7 @@ function App() {
           <p>
             <strong>タイルをスワイプ:</strong> タイルに触れてスワイプで移動<br />
             <strong>空きマスをスワイプ:</strong> 全タイルが一緒に移動<br />
+            <strong>空きマスをタップ:</strong> その位置に新しいタイルを生成<br />
             <strong>合体:</strong> 約数関係にあるタイルが隣接すると割り算が発生<br />
             <strong>同じ値:</strong> 同じ値のタイルが隣接すると両方消滅
           </p>
