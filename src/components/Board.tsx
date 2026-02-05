@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Tile as TileType, Direction } from '../types';
+import { getTileColor } from '../utils/colors';
 import './Board.css';
 
 interface BoardProps {
@@ -87,6 +88,7 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe }) => {
       left: `${gap + tile.position.col * (cellSize + gap)}px`,
       top: `${gap + tile.position.row * (cellSize + gap)}px`,
       fontSize: tile.value > 999 ? '16px' : '20px',
+      background: getTileColor(tile.value), // 動的に色を設定
     };
   };
 
