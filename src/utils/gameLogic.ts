@@ -3,8 +3,12 @@ import { generateTileValue, isDivisor } from './math';
 
 // タイルIDのカウンターをグローバル変数からローカル関数に変更
 // React StrictModeでの二重マウント問題を回避
+// タイムスタンプとカウンターを組み合わせて衝突を防ぐ
+let idCounter = 0;
 function getNextTileId(): number {
-  return Date.now() * 1000 + Math.floor(Math.random() * 1000);
+  const timestamp = Date.now() * 10000; // より細かい粒度
+  const counter = (idCounter++) % 10000; // カウンターを追加
+  return timestamp + counter;
 }
 
 /**
