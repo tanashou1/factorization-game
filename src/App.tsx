@@ -196,6 +196,7 @@ function App() {
         }
 
         // 反応中のタイルにフラグを設定
+        let firstPairPosition: { row: number; col: number } | null = null;
         stepResult.reactingPairs.forEach(pair => {
           const tile1 = currentState.tiles.find(t => t.id === pair.tile1Id);
           const tile2 = currentState.tiles.find(t => t.id === pair.tile2Id);
@@ -203,12 +204,17 @@ function App() {
           if (tile2) tile2.isReacting = true;
           
           // チェインカウンターの位置を計算（最初のペアの中間位置）
-          if (tile1 && tile2 && !chainPosition) {
+          if (tile1 && tile2 && !firstPairPosition) {
             const midRow = (tile1.position.row + tile2.position.row) / 2;
             const midCol = (tile1.position.col + tile2.position.col) / 2;
-            setChainPosition({ row: midRow, col: midCol });
+            firstPairPosition = { row: midRow, col: midCol };
           }
         });
+        
+        // チェインカウンターの位置を設定
+        if (firstPairPosition) {
+          setChainPosition(firstPairPosition);
+        }
         
         // 反応エフェクトを表示するために状態を更新
         setGameState({ ...currentState });

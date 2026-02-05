@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { Tile as TileType, Direction } from '../types';
 import { getTileColor } from '../utils/colors';
 import './Board.css';
@@ -15,14 +15,6 @@ interface BoardProps {
 export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chainCount, chainPosition }) => {
   const boardRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number; tileId?: number } | null>(null);
-  const [, forceUpdate] = useState({});
-  
-  // Force update when board ref is set
-  useEffect(() => {
-    if (boardRef.current) {
-      forceUpdate({});
-    }
-  }, [tiles.length, size]);
   
   // Constants
   const CELL_GAP = 10; // Gap between cells in pixels
@@ -170,8 +162,8 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chain
           className="chain-counter-overlay"
           style={{
             position: 'absolute',
-            left: `${CELL_GAP + chainPosition.col * (getCellSize() + CELL_GAP) + getCellSize() / 2}px`,
-            top: `${CELL_GAP + chainPosition.row * (getCellSize() + CELL_GAP) + getCellSize() / 2}px`,
+            left: `${CELL_GAP + chainPosition.col * ((getCellSize() || 50) + CELL_GAP) + (getCellSize() || 50) / 2}px`,
+            top: `${CELL_GAP + chainPosition.row * ((getCellSize() || 50) + CELL_GAP) + (getCellSize() || 50) / 2}px`,
             transform: 'translate(-50%, -50%)',
             fontSize: '40px',
             fontWeight: 'bold',
