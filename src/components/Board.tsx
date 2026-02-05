@@ -7,9 +7,10 @@ interface BoardProps {
   size: number;
   tiles: TileType[];
   onSwipe: (direction: Direction, tileId?: number) => void;
+  onTap?: (row: number, col: number) => void;
 }
 
-export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe }) => {
+export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap }) => {
   const boardRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number; tileId?: number } | null>(null);
 
@@ -29,6 +30,18 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe }) => {
     const minSwipeDistance = 30;
 
     if (Math.abs(deltaX) < minSwipeDistance && Math.abs(deltaY) < minSwipeDistance) {
+      // タップと判定 - 空のセルをタップした場合
+      if (!touchStart.tileId && onTap && boardRef.current) {
+        const rect = boardRef.current.getBoundingClientRect();
+        const cellSize = getCellSize();
+        const gap = 10;
+        const col = Math.floor((touch.clientX - rect.left - gap) / (cellSize + gap));
+        const row = Math.floor((touch.clientY - rect.top - gap) / (cellSize + gap));
+        
+        if (row >= 0 && row < size && col >= 0 && col < size) {
+          onTap(row, col);
+        }
+      }
       setTouchStart(null);
       return;
     }
@@ -57,6 +70,18 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe }) => {
     const minSwipeDistance = 30;
 
     if (Math.abs(deltaX) < minSwipeDistance && Math.abs(deltaY) < minSwipeDistance) {
+      // クリックと判定 - 空のセルをクリックした場合
+      if (!touchStart.tileId && onTap && boardRef.current) {
+        const rect = boardRef.current.getBoundingClientRect();
+        const cellSize = getCellSize();
+        const gap = 10;
+        const col = Math.floor((e.clientX - rect.left - gap) / (cellSize + gap));
+        const row = Math.floor((e.clientY - rect.top - gap) / (cellSize + gap));
+        
+        if (row >= 0 && row < size && col >= 0 && col < size) {
+          onTap(row, col);
+        }
+      }
       setTouchStart(null);
       return;
     }
