@@ -30,22 +30,24 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chain
 
   // Update cell size on mount and when size changes
   React.useEffect(() => {
-    calculateCellSize();
+    // Use requestAnimationFrame to ensure DOM is ready
+    const rafId = requestAnimationFrame(() => {
+      calculateCellSize();
+    });
+    
+    return () => cancelAnimationFrame(rafId);
   }, [calculateCellSize]);
 
-  // Update cell size on window resize
+  // Set up resize listener once on mount
   React.useEffect(() => {
     const handleResize = () => {
       calculateCellSize();
     };
     
     window.addEventListener('resize', handleResize);
-    // Also calculate after a short delay to ensure the board is rendered
-    const timer = setTimeout(calculateCellSize, 0);
     
     return () => {
       window.removeEventListener('resize', handleResize);
-      clearTimeout(timer);
     };
   }, [calculateCellSize]);
 
