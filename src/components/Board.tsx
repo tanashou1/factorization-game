@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { Tile as TileType, Direction } from '../types';
 import { getTileColor } from '../utils/colors';
 import './Board.css';
@@ -15,9 +15,41 @@ interface BoardProps {
 export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chainCount, chainPosition }) => {
   const boardRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number; tileId?: number } | null>(null);
+  const [cellSize, setCellSize] = useState<number>(0);
   
   // Constants
   const CELL_GAP = 10; // Gap between cells in pixels
+
+  // Calculate cell size when board is mounted or resized
+  const calculateCellSize = useCallback(() => {
+    if (!boardRef.current) return;
+    const width = boardRef.current.offsetWidth;
+    const newCellSize = (width - (size + 1) * CELL_GAP) / size;
+    setCellSize(newCellSize);
+  }, [size]);
+
+  // Update cell size on mount and when size changes
+  React.useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM is ready
+    const rafId = requestAnimationFrame(() => {
+      calculateCellSize();
+    });
+    
+    return () => cancelAnimationFrame(rafId);
+  }, [calculateCellSize]);
+
+  // Set up resize listener once on mount
+  React.useEffect(() => {
+    const handleResize = () => {
+      calculateCellSize();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [calculateCellSize]);
 
   const handleTouchStart = (e: React.TouchEvent, tileId?: number) => {
     const touch = e.touches[0];
@@ -38,7 +70,6 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chain
       // タップと判定 - 空のセルをタップした場合
       if (!touchStart.tileId && onTap && boardRef.current) {
         const rect = boardRef.current.getBoundingClientRect();
-        const cellSize = getCellSize();
         const col = Math.floor((touch.clientX - rect.left - CELL_GAP) / (cellSize + CELL_GAP));
         const row = Math.floor((touch.clientY - rect.top - CELL_GAP) / (cellSize + CELL_GAP));
         
@@ -77,7 +108,6 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chain
       // クリックと判定 - 空のセルをクリックした場合
       if (!touchStart.tileId && onTap && boardRef.current) {
         const rect = boardRef.current.getBoundingClientRect();
-        const cellSize = getCellSize();
         const col = Math.floor((e.clientX - rect.left - CELL_GAP) / (cellSize + CELL_GAP));
         const row = Math.floor((e.clientY - rect.top - CELL_GAP) / (cellSize + CELL_GAP));
         
@@ -107,8 +137,7 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chain
   };
 
   const getTileStyle = (tile: TileType): React.CSSProperties => {
-    const cellSize = getCellSize();
-    // Ensure minimum cell size for initial render
+    // Use the state cellSize instead of calculating on the fly
     const safeSize = cellSize || 50;
     return {
       width: `${safeSize}px`,
@@ -162,8 +191,8 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chain
           className="chain-counter-overlay"
           style={{
             position: 'absolute',
-            left: `${CELL_GAP + chainPosition.col * ((getCellSize() || 50) + CELL_GAP) + (getCellSize() || 50) / 2}px`,
-            top: `${CELL_GAP + chainPosition.row * ((getCellSize() || 50) + CELL_GAP) + (getCellSize() || 50) / 2}px`,
+            left: `${CELL_GAP + chainPosition.col * ((cellSize || 50) + CELL_GAP) + (cellSize || 50) / 2}px`,
+            top: `${CELL_GAP + chainPosition.row * ((cellSize || 50) + CELL_GAP) + (cellSize || 50) / 2}px`,
             transform: 'translate(-50%, -50%)',
             fontSize: '40px',
             fontWeight: 'bold',
