@@ -11,6 +11,18 @@
 
 ---
 
+## [1.5.0] - 2026-02-05
+
+### Changed
+- **チャレンジモード**: レベルアップに必要なスコアを「レベルの2乗」から「レベルの3乗」に変更
+  - レベル2: 4点 → 8点
+  - レベル3: 9点 → 27点
+  - レベル5: 25点 → 125点
+- **タイル生成**: タイル生成時の数字の最大値を999999に制限
+  - 選んだ素数の積が999999を超える場合、素数を一つずつ取り除いて調整
+
+---
+
 ## [1.4.0] - 2026-02-05
 
 ### Added
@@ -97,7 +109,8 @@
 
 ## リンク
 
-- [Unreleased]: https://github.com/tanashou1/factorization-game/compare/v1.4.0...HEAD
+- [Unreleased]: https://github.com/tanashou1/factorization-game/compare/v1.5.0...HEAD
+- [1.5.0]: https://github.com/tanashou1/factorization-game/compare/v1.4.0...v1.5.0
 - [1.4.0]: https://github.com/tanashou1/factorization-game/compare/v1.0.2...v1.4.0
 - [1.0.2]: https://github.com/tanashou1/factorization-game/compare/v1.0.1...v1.0.2
 - [1.0.1]: https://github.com/tanashou1/factorization-game/compare/v1.0.0...v1.0.1

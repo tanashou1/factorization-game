@@ -80,7 +80,7 @@ function App() {
       // Level up!
       const currentLevel = gameState.currentLevel || 2;
       const nextLevel = getNextPrime(currentLevel);
-      const nextTargetScore = nextLevel * nextLevel;
+      const nextTargetScore = nextLevel * nextLevel * nextLevel;
       
       setLevelUpMessage(`レベルアップ！ レベル ${nextLevel}`);
       
