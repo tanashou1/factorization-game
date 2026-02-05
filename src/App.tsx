@@ -154,8 +154,11 @@ function App() {
   return (
     <div className="app">
       <div className="header">
-        <h1>🔢 因数分解ゲーム</h1>
-        <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <h1 style={{ margin: 0 }}>🔢 因数分解ゲーム</h1>
+          <span style={{ fontSize: '14px', color: '#888', fontWeight: 'normal' }}>v{packageJson.version}</span>
+        </div>
+        <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
           タイルをスワイプして約数で割ろう！
         </p>
       </div>
@@ -223,13 +226,20 @@ function App() {
           </div>
           <div className="param-control">
             <label>最大素数 (p): {params.maxPrime}</label>
-            <input
-              type="range"
-              min="2"
-              max="19"
+            <select
               value={params.maxPrime}
               onChange={(e) => handleParamChange('maxPrime', Number(e.target.value))}
-            />
+              style={{ width: '100%', padding: '8px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
+            >
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="7">7</option>
+              <option value="11">11</option>
+              <option value="13">13</option>
+              <option value="17">17</option>
+              <option value="19">19</option>
+            </select>
           </div>
         </div>
 
@@ -254,8 +264,7 @@ function App() {
       </div>
 
       <div className="footer">
-        <span className="version">v{packageJson.version}</span>
-        <p style={{ marginTop: '10px', fontSize: '12px' }}>
+        <p style={{ margin: '10px 0', fontSize: '12px' }}>
           © 2026 Factorization Game - 素因数分解パズル
         </p>
       </div>

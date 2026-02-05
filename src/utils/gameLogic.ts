@@ -1,7 +1,15 @@
 import { Tile, GameState, GameParams, Direction, MergeResult, MergeStep } from '../types';
 import { generateTileValue, isDivisor } from './math';
 
-let nextTileId = 1;
+// タイルIDのカウンターをグローバル変数からローカル関数に変更
+// React StrictModeでの二重マウント問題を回避
+// タイムスタンプとカウンターを組み合わせて衝突を防ぐ（JavaScript安全整数範囲内）
+let idCounter = 0;
+function getNextTileId(): number {
+  const timestamp = Date.now(); // ミリ秒のタイムスタンプ
+  const counter = (idCounter++) % 1000; // 0-999のカウンター
+  return timestamp * 1000 + counter; // 安全な範囲内で一意性を保証
+}
 
 /**
  * 空のボードを作成
@@ -26,15 +34,68 @@ function getEmptyPositions(board: (Tile | null)[][]): { row: number; col: number
 }
 
 /**
- * 新しいタイルを生成
+ * 盤面上のタイルから近い位置を取得（マンハッタン距離）
+ */
+function getNearbyPositions(board: (Tile | null)[][], emptyPositions: { row: number; col: number }[]): { row: number; col: number }[] {
+  if (emptyPositions.length === 0) return [];
+  
+  // 既存のタイルの位置を取得
+  const tilePositions: { row: number; col: number }[] = [];
+  for (let row = 0; row < board.length; row++) {
+    for (let col = 0; col < board[row].length; col++) {
+      if (board[row][col] !== null) {
+        tilePositions.push({ row, col });
+      }
+    }
+  }
+  
+  // タイルがない場合は中央付近を優先
+  if (tilePositions.length === 0) {
+    const center = Math.floor(board.length / 2);
+    return emptyPositions.sort((a, b) => {
+      const distA = Math.abs(a.row - center) + Math.abs(a.col - center);
+      const distB = Math.abs(b.row - center) + Math.abs(b.col - center);
+      return distA - distB;
+    }).slice(0, Math.max(1, Math.floor(emptyPositions.length / 2)));
+  }
+  
+  // 各空き位置から最も近いタイルまでの距離を計算
+  const positionsWithDistance = emptyPositions.map(empty => {
+    const minDistance = Math.min(...tilePositions.map(tile => 
+      Math.abs(empty.row - tile.row) + Math.abs(empty.col - tile.col)
+    ));
+    return { position: empty, distance: minDistance };
+  });
+  
+  // 距離でソートして、近い位置を優先（距離2以内を優先）
+  const nearbyPositions = positionsWithDistance
+    .filter(p => p.distance <= 2)
+    .map(p => p.position);
+  
+  // 近い位置がない場合は距離3以内を返す
+  if (nearbyPositions.length === 0) {
+    return positionsWithDistance
+      .filter(p => p.distance <= 3)
+      .map(p => p.position);
+  }
+  
+  return nearbyPositions;
+}
+
+/**
+ * 新しいタイルを生成（盤面の近くに配置）
  */
 export function spawnTile(board: (Tile | null)[][], maxPrime: number): Tile | null {
   const emptyPositions = getEmptyPositions(board);
   if (emptyPositions.length === 0) return null;
   
-  const position = emptyPositions[Math.floor(Math.random() * emptyPositions.length)];
+  // 近い位置を優先的に選択
+  const nearbyPositions = getNearbyPositions(board, emptyPositions);
+  const candidatePositions = nearbyPositions.length > 0 ? nearbyPositions : emptyPositions;
+  
+  const position = candidatePositions[Math.floor(Math.random() * candidatePositions.length)];
   const tile: Tile = {
-    id: nextTileId++,
+    id: getNextTileId(),
     value: generateTileValue(maxPrime),
     position,
     isNew: true,
