@@ -279,7 +279,7 @@ function App() {
 
       {chainCount > 0 && (
         <div className="chain-counter">
-          {chainCount}連鎖！
+          {chainCount} CHAIN!
         </div>
       )}
 
