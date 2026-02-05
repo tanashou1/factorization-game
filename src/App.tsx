@@ -38,7 +38,7 @@ function App() {
       setParams(initialParams);
       setGameState(createInitialState(initialParams, gameMode));
     }
-  }, [gameMode, gameState]);
+  }, [gameMode]);
 
   const handleModeSelection = (mode: GameMode) => {
     setGameMode(mode);
@@ -102,7 +102,7 @@ function App() {
         setLevelUpMessage(null);
       }, 3000);
     }
-  }, [gameState?.score, gameState?.targetScore]);
+  }, [gameState, params]);
 
   if (!gameMode) {
     return <ModeSelection onSelectMode={handleModeSelection} />;
