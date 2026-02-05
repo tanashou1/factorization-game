@@ -27,12 +27,21 @@ const PRIME_COLOR_PALETTE: RGB[] = [
 ];
 
 /**
+ * 最初の25個の素数リスト（モジュールレベルの定数）
+ */
+const KNOWN_PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
+
+/**
  * 素数のインデックスを取得（2から始まる素数の順序）
  */
 function getPrimeIndex(prime: number): number {
-  const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
-  const index = primes.indexOf(prime);
-  return index >= 0 ? index : primes.length + (prime % 10); // 未知の素数は適当にマッピング
+  const index = KNOWN_PRIMES.indexOf(prime);
+  // 既知の素数の場合はそのインデックスを返す
+  if (index >= 0) return index;
+  
+  // 未知の素数の場合は、素数自体をハッシュしてパレットにマッピング
+  // (prime - 97) を使用して97以降の素数を均等に分散
+  return KNOWN_PRIMES.length + ((prime - 97) % 10);
 }
 
 /**
