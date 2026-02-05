@@ -25,13 +25,36 @@ export function generateTileValue(maxPrime: number): number {
   const primes = getPrimesUpTo(maxPrime);
   if (primes.length === 0) return 2;
   
+  const MAX_VALUE = 999999;
+  
   // 1～primes.length個の素数をランダムに選択（重複を許す）
   const count = Math.floor(Math.random() * primes.length) + 1;
-  let value = 1;
+  const selectedPrimes: number[] = [];
   
   for (let i = 0; i < count; i++) {
     const randomPrime = primes[Math.floor(Math.random() * primes.length)];
-    value *= randomPrime;
+    selectedPrimes.push(randomPrime);
+  }
+  
+  // 積を計算
+  let value = 1;
+  for (const prime of selectedPrimes) {
+    value *= prime;
+  }
+  
+  // 999999を超えた場合、選んだ素数を一つずつ取り除く
+  let primesToUse = [...selectedPrimes];
+  while (value > MAX_VALUE && primesToUse.length > 0) {
+    primesToUse.pop(); // 末尾から素数を削除
+    value = 1;
+    for (const prime of primesToUse) {
+      value *= prime;
+    }
+  }
+  
+  // すべての素数を取り除いても999999を超える場合（ありえないが念のため）
+  if (value > MAX_VALUE) {
+    return 2;
   }
   
   return value;

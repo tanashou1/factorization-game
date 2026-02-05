@@ -130,7 +130,7 @@ export function createInitialState(params: GameParams, mode: GameMode = 'free'):
   // Challenge mode specific initialization
   if (mode === 'challenge') {
     state.currentLevel = 2; // Start from level 2 (first prime)
-    state.targetScore = 4; // 2^2 = 4
+    state.targetScore = 8; // 2^3 = 8
   }
   
   return state;
