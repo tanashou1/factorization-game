@@ -91,7 +91,7 @@ function App() {
         // 反応エフェクトを表示するために状態を更新
         setGameState({ ...currentState });
         
-        // 300ms待ってからエフェクト表示（反応アニメーション）
+        // 反応アニメーションの完了を待つ (300ms)
         await new Promise(resolve => setTimeout(resolve, 300));
 
         // チェインカウンター表示
