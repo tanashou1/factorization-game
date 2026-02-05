@@ -82,7 +82,7 @@ function App() {
       const nextLevel = getNextPrime(currentLevel);
       const nextTargetScore = nextLevel * nextLevel * nextLevel;
       
-      setLevelUpMessage(`レベルアップ！ レベル ${nextLevel}`);
+      setLevelUpMessage(`Level ${nextLevel}`);
       
       // Update game state with new level
       setGameState({
@@ -97,10 +97,10 @@ function App() {
         maxPrime: nextLevel,
       });
       
-      // Clear level up message after 3 seconds
+      // Clear level up message after 1 second
       setTimeout(() => {
         setLevelUpMessage(null);
-      }, 3000);
+      }, 1000);
     }
   }, [gameState, params]);
 
@@ -255,10 +255,6 @@ function App() {
             <div className="challenge-label">目標スコア</div>
             <div className="challenge-value">{gameState.targetScore}</div>
           </div>
-          <div className="challenge-item">
-            <div className="challenge-label">残り</div>
-            <div className="challenge-value">{Math.max(0, (gameState.targetScore || 0) - gameState.score)}</div>
-          </div>
         </div>
       )}
 
@@ -270,10 +266,6 @@ function App() {
         <div className="score-item">
           <div className="score-label">移動回数</div>
           <div className="score-value">{gameState.moveCount}</div>
-        </div>
-        <div className="score-item">
-          <div className="score-label">タイル数</div>
-          <div className="score-value">{gameState.tiles.length}</div>
         </div>
       </div>
 
