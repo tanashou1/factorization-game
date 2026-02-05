@@ -27,6 +27,7 @@ function App() {
   const [params, setParams] = useState<GameParams>(defaultParams);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [chainCount, setChainCount] = useState<number>(0);
+  const [chainPosition, setChainPosition] = useState<{ row: number; col: number } | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [levelUpMessage, setLevelUpMessage] = useState<string | null>(null);
 
@@ -63,6 +64,7 @@ function App() {
       setGameState(createInitialState(params, gameMode));
     }
     setChainCount(0);
+    setChainPosition(null);
     setLevelUpMessage(null);
   };
 
@@ -70,6 +72,7 @@ function App() {
     setGameMode(null);
     setGameState(null);
     setChainCount(0);
+    setChainPosition(null);
     setLevelUpMessage(null);
   };
 
@@ -193,12 +196,25 @@ function App() {
         }
 
         // 反応中のタイルにフラグを設定
+        let firstPairPosition: { row: number; col: number } | null = null;
         stepResult.reactingPairs.forEach(pair => {
           const tile1 = currentState.tiles.find(t => t.id === pair.tile1Id);
           const tile2 = currentState.tiles.find(t => t.id === pair.tile2Id);
           if (tile1) tile1.isReacting = true;
           if (tile2) tile2.isReacting = true;
+          
+          // チェインカウンターの位置を計算（最初のペアの中間位置）
+          if (tile1 && tile2 && !firstPairPosition) {
+            const midRow = (tile1.position.row + tile2.position.row) / 2;
+            const midCol = (tile1.position.col + tile2.position.col) / 2;
+            firstPairPosition = { row: midRow, col: midCol };
+          }
         });
+        
+        // チェインカウンターの位置を設定
+        if (firstPairPosition) {
+          setChainPosition(firstPairPosition);
+        }
         
         // 反応エフェクトを表示するために状態を更新
         setGameState({ ...currentState });
@@ -235,6 +251,7 @@ function App() {
       // チェインカウンター非表示
       setTimeout(() => {
         setChainCount(0);
+        setChainPosition(null);
       }, 1000);
 
       // k回移動ごとまたはタイルが消滅したら新タイル生成
@@ -293,10 +310,6 @@ function App() {
           <div className="score-label">スコア</div>
           <div className="score-value">{gameState.score}</div>
         </div>
-        <div className="score-item">
-          <div className="score-label">移動回数</div>
-          <div className="score-value">{gameState.moveCount}</div>
-        </div>
       </div>
 
       <div className="game-board">
@@ -305,14 +318,10 @@ function App() {
           tiles={gameState.tiles}
           onSwipe={handleSwipe}
           onTap={handleTap}
+          chainCount={chainCount}
+          chainPosition={chainPosition}
         />
       </div>
-
-      {chainCount > 0 && (
-        <div className="chain-counter">
-          {chainCount} CHAIN!
-        </div>
-      )}
 
       {levelUpMessage && (
         <div className="level-up-message">

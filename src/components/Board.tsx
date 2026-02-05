@@ -8,9 +8,11 @@ interface BoardProps {
   tiles: TileType[];
   onSwipe: (direction: Direction, tileId?: number) => void;
   onTap?: (row: number, col: number) => void;
+  chainCount?: number;
+  chainPosition?: { row: number; col: number } | null;
 }
 
-export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap }) => {
+export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chainCount, chainPosition }) => {
   const boardRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number; tileId?: number } | null>(null);
   
@@ -106,11 +108,13 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap }) => 
 
   const getTileStyle = (tile: TileType): React.CSSProperties => {
     const cellSize = getCellSize();
+    // Ensure minimum cell size for initial render
+    const safeSize = cellSize || 50;
     return {
-      width: `${cellSize}px`,
-      height: `${cellSize}px`,
-      left: `${CELL_GAP + tile.position.col * (cellSize + CELL_GAP)}px`,
-      top: `${CELL_GAP + tile.position.row * (cellSize + CELL_GAP)}px`,
+      width: `${safeSize}px`,
+      height: `${safeSize}px`,
+      left: `${CELL_GAP + tile.position.col * (safeSize + CELL_GAP)}px`,
+      top: `${CELL_GAP + tile.position.row * (safeSize + CELL_GAP)}px`,
       fontSize: tile.value > 999 ? '16px' : '20px',
       background: getTileColor(tile.value), // 動的に色を設定
     };
@@ -153,6 +157,26 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap }) => 
           <span className="tile-value">{tile.value}</span>
         </div>
       ))}
+      {(chainCount ?? 0) > 0 && chainPosition && (
+        <div 
+          className="chain-counter-overlay"
+          style={{
+            position: 'absolute',
+            left: `${CELL_GAP + chainPosition.col * ((getCellSize() || 50) + CELL_GAP) + (getCellSize() || 50) / 2}px`,
+            top: `${CELL_GAP + chainPosition.row * ((getCellSize() || 50) + CELL_GAP) + (getCellSize() || 50) / 2}px`,
+            transform: 'translate(-50%, -50%)',
+            fontSize: '40px',
+            fontWeight: 'bold',
+            color: '#667eea',
+            textShadow: '0 0 10px rgba(102, 126, 234, 0.5)',
+            zIndex: 1000,
+            animation: 'chainPulse 0.5s ease-out',
+            pointerEvents: 'none',
+          }}
+        >
+          {chainCount} CHAIN!
+        </div>
+      )}
     </div>
   );
 };
