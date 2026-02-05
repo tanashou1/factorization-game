@@ -112,7 +112,7 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe }) => {
       {tiles.map((tile) => (
         <div
           key={tile.id}
-          className={`tile ${tile.isNew ? 'new' : ''}`}
+          className={`tile ${tile.isNew ? 'new' : ''} ${tile.isReacting ? 'reacting' : ''}`}
           data-value={tile.value}
           style={getTileStyle(tile)}
           onTouchStart={(e) => {

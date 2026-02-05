@@ -241,10 +241,12 @@ function processOneMergeRound(
   score: number;
   removedTiles: number[];
   changedTiles: Map<number, number>;
+  reactingPairs: Array<{ tile1Id: number; tile2Id: number }>;
 } {
   let mergeOccurred = false;
   const tilesToRemove: number[] = [];
   const tilesToChange = new Map<number, number>();
+  const reactingPairs: Array<{ tile1Id: number; tile2Id: number }> = [];
   let score = 0;
   
   // 小さい値のタイルから順に処理
@@ -257,10 +259,14 @@ function processOneMergeRound(
     
     for (const adjacent of adjacentTiles) {
       if (tilesToRemove.includes(adjacent.id)) continue;
+      // 既に変更予定のタイルは処理しない（バグ修正）
+      if (tilesToChange.has(adjacent.id)) continue;
+      if (tilesToChange.has(tile.id)) continue;
       
       // 同じ値のタイル同士
       if (tile.value === adjacent.value) {
         tilesToRemove.push(tile.id, adjacent.id);
+        reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
         score += (tile.value + adjacent.value) * chainMultiplier;
         mergeOccurred = true;
         break;
@@ -271,6 +277,7 @@ function processOneMergeRound(
         const newValue = adjacent.value / tile.value;
         tilesToRemove.push(tile.id);
         tilesToChange.set(adjacent.id, newValue);
+        reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
         score += tile.value * chainMultiplier;
         
         // 値が1になったら消滅
@@ -287,6 +294,7 @@ function processOneMergeRound(
         const newValue = tile.value / adjacent.value;
         tilesToRemove.push(adjacent.id);
         tilesToChange.set(tile.id, newValue);
+        reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
         score += adjacent.value * chainMultiplier;
         
         // 値が1になったら消滅
@@ -327,6 +335,7 @@ function processOneMergeRound(
     score,
     removedTiles: tilesToRemove,
     changedTiles: tilesToChange,
+    reactingPairs,
   };
 }
 
@@ -371,6 +380,7 @@ export function processOneMergeStep(
   score: number;
   removedTiles: number[];
   changedTiles: Map<number, number>;
+  reactingPairs: Array<{ tile1Id: number; tile2Id: number }>;
   newState: GameState;
 } {
   const chainMultiplier = Math.pow(2, chainNumber - 1);
@@ -387,6 +397,7 @@ export function processOneMergeStep(
     score: stepResult.score,
     removedTiles: stepResult.removedTiles,
     changedTiles: stepResult.changedTiles,
+    reactingPairs: stepResult.reactingPairs,
     newState: currentState,
   };
 }

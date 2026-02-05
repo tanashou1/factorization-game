@@ -80,6 +80,20 @@ function App() {
           break;
         }
 
+        // 反応中のタイルにフラグを設定
+        stepResult.reactingPairs.forEach(pair => {
+          const tile1 = currentState.tiles.find(t => t.id === pair.tile1Id);
+          const tile2 = currentState.tiles.find(t => t.id === pair.tile2Id);
+          if (tile1) tile1.isReacting = true;
+          if (tile2) tile2.isReacting = true;
+        });
+        
+        // 反応エフェクトを表示するために状態を更新
+        setGameState({ ...currentState });
+        
+        // 反応アニメーションの完了を待つ (300ms)
+        await new Promise(resolve => setTimeout(resolve, 300));
+
         // チェインカウンター表示
         setChainCount(chainNumber);
         
@@ -93,12 +107,17 @@ function App() {
           score: newState.score + totalScore,
         };
         
+        // isReactingフラグをリセット
+        currentState.tiles.forEach(tile => {
+          tile.isReacting = false;
+        });
+        
         setGameState({ ...currentState });
         
         chainNumber++;
 
-        // 次の反応まで500ms待機
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // 次の反応まで200ms待機
+        await new Promise(resolve => setTimeout(resolve, 200));
       }
 
       // チェインカウンター非表示

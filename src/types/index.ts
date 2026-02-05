@@ -3,6 +3,7 @@ export interface Tile {
   value: number;
   position: { row: number; col: number };
   isNew?: boolean;
+  isReacting?: boolean; // 反応中かどうかを示すフラグ
 }
 
 export interface GameState {
