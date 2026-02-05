@@ -27,7 +27,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   font-weight: bold;
   border-radius: 8px;
@@ -130,33 +129,4 @@
 
 .tile-value {
   font-size: 20px;
-}
-
-/* タイルの色をバリエーション */
-.tile[data-value="2"],
-.tile[data-value="3"],
-.tile[data-value="5"],
-.tile[data-value="7"] {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.tile[data-value="4"],
-.tile[data-value="9"],
-.tile[data-value="16"],
-.tile[data-value="25"] {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.tile[data-value="6"],
-.tile[data-value="10"],
-.tile[data-value="14"],
-.tile[data-value="15"] {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-}
-
-.tile[data-value="8"],
-.tile[data-value="27"],
-.tile[data-value="64"],
-.tile[data-value="125"] {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
 }

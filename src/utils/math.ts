@@ -111,3 +111,56 @@ export function getNextPrime(n: number): number {
     candidate++;
   }
 }
+
+/**
+ * 数値が素数かどうかを判定
+ */
+export function isPrime(n: number): boolean {
+  if (n < 2) return false;
+  if (n === 2) return true;
+  if (n % 2 === 0) return false;
+  
+  for (let i = 3; i <= Math.sqrt(n); i += 2) {
+    if (n % i === 0) return false;
+  }
+  return true;
+}
+
+/**
+ * 数値の素因数分解を行う（重複を含む）
+ * 例: 12 -> [2, 2, 3], 15 -> [3, 5]
+ */
+export function getPrimeFactors(n: number): number[] {
+  const factors: number[] = [];
+  let num = n;
+  
+  // 2で割り切れる間
+  while (num % 2 === 0) {
+    factors.push(2);
+    num = num / 2;
+  }
+  
+  // 3以降の奇数で割る
+  for (let i = 3; i <= Math.sqrt(num); i += 2) {
+    while (num % i === 0) {
+      factors.push(i);
+      num = num / i;
+    }
+  }
+  
+  // numが1より大きい場合、それ自体が素数
+  if (num > 1) {
+    factors.push(num);
+  }
+  
+  return factors;
+}
+
+/**
+ * 数値の素因数分解を行う（ユニークな素数のみ）
+ * 例: 12 -> [2, 3], 15 -> [3, 5]
+ */
+export function getUniquePrimeFactors(n: number): number[] {
+  const factors = getPrimeFactors(n);
+  return [...new Set(factors)];
+}
