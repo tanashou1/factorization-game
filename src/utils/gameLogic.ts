@@ -1,4 +1,4 @@
-import { Tile, GameState, GameParams, Direction, MergeResult, MergeStep } from '../types';
+import { Tile, GameState, GameParams, Direction, MergeResult, MergeStep, GameMode } from '../types';
 import { generateTileValue, isDivisor } from './math';
 
 // タイルIDのカウンターをグローバル変数からローカル関数に変更
@@ -107,7 +107,7 @@ export function spawnTile(board: (Tile | null)[][], maxPrime: number): Tile | nu
 /**
  * 初期ゲーム状態を作成
  */
-export function createInitialState(params: GameParams): GameState {
+export function createInitialState(params: GameParams, mode: GameMode = 'free'): GameState {
   const board = createEmptyBoard(params.boardSize);
   const tiles: Tile[] = [];
   
@@ -119,12 +119,21 @@ export function createInitialState(params: GameParams): GameState {
     }
   }
   
-  return {
+  const state: GameState = {
     board,
     score: 0,
     moveCount: 0,
     tiles,
+    mode,
   };
+  
+  // Challenge mode specific initialization
+  if (mode === 'challenge') {
+    state.currentLevel = 2; // Start from level 2 (first prime)
+    state.targetScore = 4; // 2^2 = 4
+  }
+  
+  return state;
 }
 
 /**

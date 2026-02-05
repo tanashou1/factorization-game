@@ -66,3 +66,25 @@ export function isPerfectCube(n: number): boolean {
 export function isPerfectPower(n: number): boolean {
   return isPerfectSquare(n) || isPerfectCube(n);
 }
+
+/**
+ * n以降の次の素数を取得
+ */
+export function getNextPrime(n: number): number {
+  let candidate = n + 1;
+  if (candidate < 2) return 2;
+  
+  while (true) {
+    let isPrime = true;
+    for (let i = 2; i <= Math.sqrt(candidate); i++) {
+      if (candidate % i === 0) {
+        isPrime = false;
+        break;
+      }
+    }
+    if (isPrime) {
+      return candidate;
+    }
+    candidate++;
+  }
+}

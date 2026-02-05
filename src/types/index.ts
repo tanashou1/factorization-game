@@ -6,11 +6,17 @@ export interface Tile {
   isReacting?: boolean; // 反応中かどうかを示すフラグ
 }
 
+export type GameMode = 'free' | 'challenge';
+
 export interface GameState {
   board: (Tile | null)[][];
   score: number;
   moveCount: number;
   tiles: Tile[];
+  mode: GameMode;
+  // Challenge mode specific
+  currentLevel?: number;
+  targetScore?: number;
 }
 
 export interface GameParams {
