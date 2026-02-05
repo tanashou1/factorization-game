@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { Tile as TileType, Direction } from '../types';
 import { getTileColor } from '../utils/colors';
 import './Board.css';
@@ -21,17 +21,17 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chain
   const CELL_GAP = 10; // Gap between cells in pixels
 
   // Calculate cell size when board is mounted or resized
-  const calculateCellSize = () => {
+  const calculateCellSize = useCallback(() => {
     if (!boardRef.current) return;
     const width = boardRef.current.offsetWidth;
     const newCellSize = (width - (size + 1) * CELL_GAP) / size;
     setCellSize(newCellSize);
-  };
+  }, [size]);
 
   // Update cell size on mount and when size changes
   React.useEffect(() => {
     calculateCellSize();
-  }, [size]);
+  }, [calculateCellSize]);
 
   // Update cell size on window resize
   React.useEffect(() => {
@@ -47,7 +47,7 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chain
       window.removeEventListener('resize', handleResize);
       clearTimeout(timer);
     };
-  }, [size]);
+  }, [calculateCellSize]);
 
   const handleTouchStart = (e: React.TouchEvent, tileId?: number) => {
     const touch = e.touches[0];
