@@ -402,9 +402,10 @@ function processOneMergeRound(
         tilesToRemove.push(tile.id);
         tilesToChange.set(adjacent.id, newValue);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
+        // スコアは反応した両方のタイルの値の合計
         score += (tile.value + adjacent.value) * chainMultiplier;
         
-        // 値が1になったら消滅
+        // 値が1になったら消滅（スコアは上記で既に加算済み）
         if (newValue === 1) {
           tilesToRemove.push(adjacent.id);
         }
@@ -418,9 +419,10 @@ function processOneMergeRound(
         tilesToRemove.push(adjacent.id);
         tilesToChange.set(tile.id, newValue);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
+        // スコアは反応した両方のタイルの値の合計
         score += (tile.value + adjacent.value) * chainMultiplier;
         
-        // 値が1になったら消滅
+        // 値が1になったら消滅（スコアは上記で既に加算済み）
         if (newValue === 1) {
           tilesToRemove.push(tile.id);
         }

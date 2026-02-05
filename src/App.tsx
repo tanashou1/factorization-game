@@ -23,6 +23,9 @@ const defaultParams: GameParams = {
   maxPrime: 7,
 };
 
+// アニメーション遅延定数
+const GAME_OVER_CHECK_DELAY = 100; // ゲームオーバーチェック前の待機時間（ms）- タイル生成アニメーション完了を待つ
+
 function App() {
   const [gameMode, setGameMode] = useState<GameMode | null>(null);
   const [params, setParams] = useState<GameParams>(defaultParams);
@@ -277,7 +280,7 @@ function App() {
                   isGameOver: true,
                 });
               }
-            }, 100);
+            }, GAME_OVER_CHECK_DELAY);
           } else {
             // タイルを生成できなかった場合もゲームオーバーチェック
             if (checkGameOver(currentState)) {
@@ -362,7 +365,10 @@ function App() {
       {gameState.isGameOver && (
         <div className="game-over-overlay">
           <div className="game-over-content">
-            <h2>🎮 ゲームオーバー</h2>
+            <h2>
+              <span aria-hidden="true">🎮</span>
+              <span> ゲームオーバー</span>
+            </h2>
             <p>盤面が満杯で、これ以上反応ができません</p>
             <div className="final-score">
               最終スコア: {gameState.score}
