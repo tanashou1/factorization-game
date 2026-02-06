@@ -21,6 +21,7 @@ const defaultParams: GameParams = {
   initialTiles: 2,
   spawnInterval: 3,
   maxPrime: 7,
+  maxTileValue: 9999,
 };
 
 // アニメーション遅延定数
@@ -121,7 +122,7 @@ function App() {
   }
 
   const handleSpawnTile = () => {
-    const tile = spawnTile(gameState.board, params.maxPrime);
+    const tile = spawnTile(gameState.board, params.maxPrime, params.maxTileValue);
     if (tile) {
       const newBoard = gameState.board.map(row => [...row]);
       newBoard[tile.position.row][tile.position.col] = tile;
@@ -261,7 +262,7 @@ function App() {
       // k回移動ごとまたはタイルが消滅したら新タイル生成
       if (currentState.moveCount % params.spawnInterval === 0 || allRemovedTiles.length > 0) {
         setTimeout(() => {
-          const tile = spawnTile(currentState.board, params.maxPrime);
+          const tile = spawnTile(currentState.board, params.maxPrime, params.maxTileValue);
           if (tile) {
             const spawnBoard = currentState.board.map(row => [...row]);
             spawnBoard[tile.position.row][tile.position.col] = tile;
@@ -447,6 +448,20 @@ function App() {
               }}>
                 レベルに応じて自動変更
               </div>
+            </div>
+          )}
+          {gameMode === 'free' && (
+            <div className="param-control">
+              <label>タイル上限値: {params.maxTileValue}</label>
+              <input
+                type="number"
+                min="100"
+                max="999999"
+                step="100"
+                value={params.maxTileValue}
+                onChange={(e) => handleParamChange('maxTileValue', Number(e.target.value))}
+                style={{ width: '100%', padding: '8px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
             </div>
           )}
         </div>
