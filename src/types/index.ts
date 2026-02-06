@@ -26,6 +26,7 @@ export interface GameParams {
   initialTiles: number;   // m: 1-10
   spawnInterval: number;  // k: 1-10
   maxPrime: number;       // p: 2-19
+  maxTileValue: number;   // タイルの上限値
 }
 
 export type Direction = 'up' | 'down' | 'left' | 'right';

@@ -85,7 +85,7 @@ function getNearbyPositions(board: (Tile | null)[][], emptyPositions: { row: num
 /**
  * 新しいタイルを生成（盤面の近くに配置）
  */
-export function spawnTile(board: (Tile | null)[][], maxPrime: number): Tile | null {
+export function spawnTile(board: (Tile | null)[][], maxPrime: number, maxTileValue: number = 9999): Tile | null {
   const emptyPositions = getEmptyPositions(board);
   if (emptyPositions.length === 0) return null;
   
@@ -96,7 +96,7 @@ export function spawnTile(board: (Tile | null)[][], maxPrime: number): Tile | nu
   const position = candidatePositions[Math.floor(Math.random() * candidatePositions.length)];
   const tile: Tile = {
     id: getNextTileId(),
-    value: generateTileValue(maxPrime),
+    value: generateTileValue(maxPrime, maxTileValue),
     position,
     isNew: true,
   };
@@ -112,7 +112,7 @@ export function createInitialState(params: GameParams, mode: GameMode = 'free'):
   const tiles: Tile[] = [];
   
   for (let i = 0; i < params.initialTiles; i++) {
-    const tile = spawnTile(board, params.maxPrime);
+    const tile = spawnTile(board, params.maxPrime, params.maxTileValue);
     if (tile) {
       tiles.push(tile);
       board[tile.position.row][tile.position.col] = tile;
