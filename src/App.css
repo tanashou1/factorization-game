@@ -271,6 +271,7 @@
   color: #555;
 }
 
+.game-over-content .final-level,
 .game-over-content .final-score {
   font-size: 32px;
   font-weight: bold;

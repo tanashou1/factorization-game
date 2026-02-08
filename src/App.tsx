@@ -379,7 +379,7 @@ function App() {
             </h2>
             <p>盤面が満杯で、これ以上反応ができません</p>
             {gameState.mode === 'challenge' && gameState.currentLevel && (
-              <div className="final-score">
+              <div className="final-level">
                 到達レベル: {gameState.currentLevel}
               </div>
             )}
