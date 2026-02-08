@@ -1,5 +1,5 @@
 import { Tile, GameState, GameParams, Direction, MergeResult, MergeStep, GameMode } from '../types';
-import { generateTileValue, isDivisor } from './math';
+import { generateTileValue, isDivisor, isPrime } from './math';
 
 // タイルIDのカウンターをグローバル変数からローカル関数に変更
 // React StrictModeでの二重マウント問題を回避
@@ -16,6 +16,13 @@ export function getNextTileId(): number {
  */
 export function createEmptyBoard(size: number): (Tile | null)[][] {
   return Array(size).fill(null).map(() => Array(size).fill(null));
+}
+
+/**
+ * 盤面に素数以外のタイル（合成数）が存在するかチェック
+ */
+export function hasNonPrimeTiles(tiles: Tile[]): boolean {
+  return tiles.some(tile => !isPrime(tile.value));
 }
 
 /**

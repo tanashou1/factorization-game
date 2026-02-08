@@ -11,6 +11,7 @@ import {
   createEmptyBoard,
   getNextTileId,
   checkGameOver,
+  hasNonPrimeTiles,
 } from './utils/gameLogic';
 import { getNextPrime } from './utils/math';
 import packageJson from '../package.json';
@@ -259,8 +260,14 @@ function App() {
         setChainPosition(null);
       }, 1000);
 
-      // k回移動ごとまたはタイルが消滅したら新タイル生成
-      if (currentState.moveCount % params.spawnInterval === 0 || allRemovedTiles.length > 0) {
+      // タイル生成ロジック:
+      // 1. タイルが消滅した場合、盤面に素数以外のタイルが一つもない時のみ新タイル生成
+      // 2. それ以外は、k回移動ごとに新タイル生成
+      const shouldSpawnTile = 
+        (allRemovedTiles.length > 0 && !hasNonPrimeTiles(currentState.tiles)) ||
+        (currentState.moveCount % params.spawnInterval === 0);
+      
+      if (shouldSpawnTile) {
         setTimeout(() => {
           const tile = spawnTile(currentState.board, params.maxPrime, params.maxTileValue);
           if (tile) {
@@ -371,6 +378,11 @@ function App() {
               <span> ゲームオーバー</span>
             </h2>
             <p>盤面が満杯で、これ以上反応ができません</p>
+            {gameState.mode === 'challenge' && gameState.currentLevel && (
+              <div className="final-score">
+                到達レベル: {gameState.currentLevel}
+              </div>
+            )}
             <div className="final-score">
               最終スコア: {gameState.score}
             </div>
