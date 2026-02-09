@@ -389,7 +389,6 @@ function processOneMergeRound(
     const adjacentTiles = getAdjacentTiles(tile, state.board);
     
     // 複数の反応候補がある場合、大きい数字を優先
-    // 同じ値 > 約数関係 の順に優先度を設定し、その中で大きい値を優先
     let bestMatch: { adjacent: Tile; type: 'equal' | 'divisor-large' | 'divisor-small' } | null = null;
     
     for (const adjacent of adjacentTiles) {
@@ -398,25 +397,23 @@ function processOneMergeRound(
       if (tilesToChange.has(adjacent.id)) continue;
       if (tilesToChange.has(tile.id)) continue;
       
-      // 同じ値のタイル同士（最優先）
+      // 同じ値のタイル同士
       if (tile.value === adjacent.value) {
-        if (!bestMatch || bestMatch.type !== 'equal' || adjacent.value > bestMatch.adjacent.value) {
+        if (!bestMatch || adjacent.value > bestMatch.adjacent.value) {
           bestMatch = { adjacent, type: 'equal' };
         }
       }
       
       // 約数関係（tile < adjacent）
       if (tile.value < adjacent.value && isDivisor(tile.value, adjacent.value)) {
-        if (!bestMatch || bestMatch.type === 'divisor-small' || 
-            (bestMatch.type === 'divisor-large' && adjacent.value > bestMatch.adjacent.value)) {
+        if (!bestMatch || adjacent.value > bestMatch.adjacent.value) {
           bestMatch = { adjacent, type: 'divisor-large' };
         }
       }
       
       // 約数関係（adjacent < tile）
       if (adjacent.value < tile.value && isDivisor(adjacent.value, tile.value)) {
-        if (!bestMatch || 
-            (bestMatch.type === 'divisor-small' && adjacent.value > bestMatch.adjacent.value)) {
+        if (!bestMatch || adjacent.value > bestMatch.adjacent.value) {
           bestMatch = { adjacent, type: 'divisor-small' };
         }
       }
