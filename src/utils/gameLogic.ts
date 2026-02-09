@@ -387,8 +387,11 @@ function processOneMergeRound(
     if (tilesToRemove.includes(tile.id)) continue;
     
     const adjacentTiles = getAdjacentTiles(tile, state.board);
+    // 大きい数字を優先して反応するようにソート（降順）
+    // 元の配列を変更しないように新しい配列を作成
+    const sortedAdjacentTiles = [...adjacentTiles].sort((a, b) => b.value - a.value);
     
-    for (const adjacent of adjacentTiles) {
+    for (const adjacent of sortedAdjacentTiles) {
       if (tilesToRemove.includes(adjacent.id)) continue;
       // 既に変更予定のタイルは処理しない（バグ修正）
       if (tilesToChange.has(adjacent.id)) continue;
