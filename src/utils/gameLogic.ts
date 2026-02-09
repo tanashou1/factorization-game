@@ -388,54 +388,76 @@ function processOneMergeRound(
     
     const adjacentTiles = getAdjacentTiles(tile, state.board);
     
+    // 複数の反応候補がある場合、大きい数字を優先
+    // 同じ値 > 約数関係 の順に優先度を設定し、その中で大きい値を優先
+    let bestMatch: { adjacent: Tile; type: 'equal' | 'divisor-large' | 'divisor-small' } | null = null;
+    
     for (const adjacent of adjacentTiles) {
       if (tilesToRemove.includes(adjacent.id)) continue;
       // 既に変更予定のタイルは処理しない（バグ修正）
       if (tilesToChange.has(adjacent.id)) continue;
       if (tilesToChange.has(tile.id)) continue;
       
-      // 同じ値のタイル同士
+      // 同じ値のタイル同士（最優先）
       if (tile.value === adjacent.value) {
+        if (!bestMatch || bestMatch.type !== 'equal' || adjacent.value > bestMatch.adjacent.value) {
+          bestMatch = { adjacent, type: 'equal' };
+        }
+      }
+      
+      // 約数関係（tile < adjacent）
+      if (tile.value < adjacent.value && isDivisor(tile.value, adjacent.value)) {
+        if (!bestMatch || bestMatch.type === 'divisor-small' || 
+            (bestMatch.type === 'divisor-large' && adjacent.value > bestMatch.adjacent.value)) {
+          bestMatch = { adjacent, type: 'divisor-large' };
+        }
+      }
+      
+      // 約数関係（adjacent < tile）
+      if (adjacent.value < tile.value && isDivisor(adjacent.value, tile.value)) {
+        if (!bestMatch || 
+            (bestMatch.type === 'divisor-small' && adjacent.value > bestMatch.adjacent.value)) {
+          bestMatch = { adjacent, type: 'divisor-small' };
+        }
+      }
+    }
+    
+    // 最適なマッチが見つかった場合、反応を実行
+    if (bestMatch) {
+      const adjacent = bestMatch.adjacent;
+      
+      if (bestMatch.type === 'equal') {
+        // 同じ値のタイル同士
         tilesToRemove.push(tile.id, adjacent.id);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
         score += (tile.value + adjacent.value) * chainMultiplier;
         mergeOccurred = true;
-        break;
-      }
-      
-      // 約数関係
-      if (tile.value < adjacent.value && isDivisor(tile.value, adjacent.value)) {
+      } else if (bestMatch.type === 'divisor-large') {
+        // 約数関係（tile < adjacent）
         const newValue = adjacent.value / tile.value;
         tilesToRemove.push(tile.id);
         tilesToChange.set(adjacent.id, newValue);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
-        // スコアは反応した両方のタイルの値の合計
         score += (tile.value + adjacent.value) * chainMultiplier;
         
-        // 値が1になったら消滅（スコアは上記で既に加算済み）
         if (newValue === 1) {
           tilesToRemove.push(adjacent.id);
         }
         
         mergeOccurred = true;
-        break;
-      }
-      
-      if (adjacent.value < tile.value && isDivisor(adjacent.value, tile.value)) {
+      } else if (bestMatch.type === 'divisor-small') {
+        // 約数関係（adjacent < tile）
         const newValue = tile.value / adjacent.value;
         tilesToRemove.push(adjacent.id);
         tilesToChange.set(tile.id, newValue);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
-        // スコアは反応した両方のタイルの値の合計
         score += (tile.value + adjacent.value) * chainMultiplier;
         
-        // 値が1になったら消滅（スコアは上記で既に加算済み）
         if (newValue === 1) {
           tilesToRemove.push(tile.id);
         }
         
         mergeOccurred = true;
-        break;
       }
     }
   }
