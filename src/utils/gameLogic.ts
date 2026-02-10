@@ -328,10 +328,12 @@ export function processMerges(state: GameState): MergeResult {
   };
   
   let currentState = { ...state };
-  let chainMultiplier = 1;
   let chainNumber = 1;
   
   while (true) {
+    // n連鎖の場合、n^n倍する
+    const chainMultiplier = Math.pow(chainNumber, chainNumber);
+    
     const stepResult = processOneMergeRound(currentState, chainMultiplier);
     if (!stepResult.mergeOccurred) break;
     
@@ -354,7 +356,6 @@ export function processMerges(state: GameState): MergeResult {
       result.changedTiles.set(id, value);
     });
     
-    chainMultiplier *= 2;
     chainNumber++;
   }
   

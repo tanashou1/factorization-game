@@ -186,7 +186,7 @@ export const Board: React.FC<BoardProps> = ({ size, tiles, onSwipe, onTap, chain
           <span className="tile-value">{tile.value}</span>
         </div>
       ))}
-      {(chainCount ?? 0) > 0 && chainPosition && (
+      {(chainCount ?? 0) > 1 && chainPosition && (
         <div 
           className="chain-counter-overlay"
           style={{
