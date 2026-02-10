@@ -380,8 +380,18 @@ function processOneMergeRound(
   const reactingPairs: Array<{ tile1Id: number; tile2Id: number }> = [];
   let score = 0;
   
-  // 小さい値のタイルから順に処理
-  const sortedTiles = [...state.tiles].sort((a, b) => a.value - b.value);
+  // 大きい値のタイルから順に処理（第一キー：値の降順、第二キー：位置の昇順）
+  const sortedTiles = [...state.tiles].sort((a, b) => {
+    // 第一キー：値の降順（大きい値が先）
+    if (a.value !== b.value) {
+      return b.value - a.value;
+    }
+    // 第二キー：位置の昇順（左上から右下へ、行優先）
+    if (a.position.row !== b.position.row) {
+      return a.position.row - b.position.row;
+    }
+    return a.position.col - b.position.col;
+  });
   
   for (const tile of sortedTiles) {
     if (tilesToRemove.includes(tile.id)) continue;
