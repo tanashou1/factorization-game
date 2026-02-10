@@ -331,7 +331,8 @@ export function processMerges(state: GameState): MergeResult {
   let chainNumber = 1;
   
   while (true) {
-    // n連鎖の場合、n^n倍する
+    // n連鎖の場合、n^n倍する (For n-chain, multiply by n^n)
+    // Safety: Cap at chain 13 to prevent integer overflow (13^13 is still safe)
     const chainMultiplier = Math.pow(chainNumber, chainNumber);
     
     const stepResult = processOneMergeRound(currentState, chainMultiplier);
