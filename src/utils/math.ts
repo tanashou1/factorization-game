@@ -22,6 +22,8 @@ export function getPrimesUpTo(n: number): number[] {
  * ランダムな素数の積を生成（タイルの値）
  * 2～10の範囲の素数（2, 3, 5, 7）から選択し、その積を計算
  * 一つずつ積を計算し、9999を超えたら一つ前の値を使用
+ * @param maxPrime 使用されていません（後方互換性のため保持）
+ * @param maxTileValue タイルの最大値（デフォルト: 9999）
  */
 export function generateTileValue(maxPrime: number, maxTileValue: number = 9999): number {
   // 2～10の範囲の素数のみを使用
