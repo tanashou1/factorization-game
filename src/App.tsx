@@ -144,7 +144,7 @@ function App() {
     }
     
     // ランダムな素数でタイルを生成
-    const primes = [2, 3, 5, 7, 11, 13, 17, 19].filter(p => p <= params.maxPrime);
+    const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53].filter(p => p <= params.maxPrime);
     const randomPrime = primes[Math.floor(Math.random() * primes.length)];
     
     const newTile: Tile = {
@@ -445,6 +445,14 @@ function App() {
                 <option value="13">13</option>
                 <option value="17">17</option>
                 <option value="19">19</option>
+                <option value="23">23</option>
+                <option value="29">29</option>
+                <option value="31">31</option>
+                <option value="37">37</option>
+                <option value="41">41</option>
+                <option value="43">43</option>
+                <option value="47">47</option>
+                <option value="53">53</option>
               </select>
             </div>
           )}
