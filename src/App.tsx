@@ -194,7 +194,8 @@ function App() {
 
       // 連鎖を500msごとに1ステップずつ処理
       while (hasMoreMerges) {
-        const stepResult = processOneMergeStep(currentState, chainNumber);
+        // 2連鎖目以降は累積スコアを渡す
+        const stepResult = processOneMergeStep(currentState, chainNumber, totalScore);
         
         if (!stepResult.merged) {
           hasMoreMerges = false;

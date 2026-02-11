@@ -329,18 +329,23 @@ export function processMerges(state: GameState): MergeResult {
   
   let currentState = { ...state };
   let chainNumber = 1;
+  let accumulatedScore = 0; // それまでに得られた累積スコア
   
   while (true) {
     // n連鎖の場合、n^n倍する (For n-chain, multiply by n^n)
     // Safety: Cap at chain 13 to prevent integer overflow (13^13 is still safe)
     const chainMultiplier = Math.pow(chainNumber, chainNumber);
     
-    const stepResult = processOneMergeRound(currentState, chainMultiplier);
+    // 2連鎖目以降は、累積スコアを渡す
+    const stepResult = processOneMergeRound(currentState, chainMultiplier, accumulatedScore);
     if (!stepResult.mergeOccurred) break;
     
     result.merged = true;
     result.chainCount++;
     result.score += stepResult.score;
+    
+    // 次の連鎖のために累積スコアを更新
+    accumulatedScore = result.score;
     
     // 各ステップの情報を記録
     const step: MergeStep = {
@@ -368,7 +373,8 @@ export function processMerges(state: GameState): MergeResult {
  */
 function processOneMergeRound(
   state: GameState,
-  chainMultiplier: number
+  chainMultiplier: number,
+  accumulatedScore: number = 0
 ): {
   mergeOccurred: boolean;
   score: number;
@@ -380,7 +386,7 @@ function processOneMergeRound(
   const tilesToRemove: number[] = [];
   const tilesToChange = new Map<number, number>();
   const reactingPairs: Array<{ tile1Id: number; tile2Id: number }> = [];
-  let score = 0;
+  let baseScore = 0; // 基本スコア（累積スコアを足す前の値）
   
   // 大きい値のタイルから順に処理（第一キー：値の降順、第二キー：位置の昇順）
   const sortedTiles = [...state.tiles].sort((a, b) => {
@@ -413,7 +419,7 @@ function processOneMergeRound(
       if (tile.value === adjacent.value) {
         tilesToRemove.push(tile.id, adjacent.id);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
-        score += (tile.value + adjacent.value) * chainMultiplier;
+        baseScore += tile.value + adjacent.value;
         mergeOccurred = true;
         break;
       }
@@ -425,7 +431,7 @@ function processOneMergeRound(
         tilesToChange.set(adjacent.id, newValue);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
         // スコアは反応した両方のタイルの値の合計
-        score += (tile.value + adjacent.value) * chainMultiplier;
+        baseScore += tile.value + adjacent.value;
         
         // 値が1になったら消滅（スコアは上記で既に加算済み）
         if (newValue === 1) {
@@ -442,7 +448,7 @@ function processOneMergeRound(
         tilesToChange.set(tile.id, newValue);
         reactingPairs.push({ tile1Id: tile.id, tile2Id: adjacent.id });
         // スコアは反応した両方のタイルの値の合計
-        score += (tile.value + adjacent.value) * chainMultiplier;
+        baseScore += tile.value + adjacent.value;
         
         // 値が1になったら消滅（スコアは上記で既に加算済み）
         if (newValue === 1) {
@@ -476,9 +482,12 @@ function processOneMergeRound(
     state.board = newBoard;
   }
   
+  // 最終スコア計算: (baseScore + accumulatedScore) * chainMultiplier
+  const finalScore = (baseScore + accumulatedScore) * chainMultiplier;
+  
   return {
     mergeOccurred,
-    score,
+    score: finalScore,
     removedTiles: tilesToRemove,
     changedTiles: tilesToChange,
     reactingPairs,
@@ -520,7 +529,8 @@ export function moveSingleTile(
  */
 export function processOneMergeStep(
   state: GameState,
-  chainNumber: number
+  chainNumber: number,
+  accumulatedScore: number = 0
 ): {
   merged: boolean;
   score: number;
@@ -529,14 +539,14 @@ export function processOneMergeStep(
   reactingPairs: Array<{ tile1Id: number; tile2Id: number }>;
   newState: GameState;
 } {
-  const chainMultiplier = Math.pow(2, chainNumber - 1);
+  const chainMultiplier = Math.pow(chainNumber, chainNumber);
   const currentState = {
     ...state,
     board: state.board.map(row => [...row]),
     tiles: [...state.tiles],
   };
   
-  const stepResult = processOneMergeRound(currentState, chainMultiplier);
+  const stepResult = processOneMergeRound(currentState, chainMultiplier, accumulatedScore);
   
   return {
     merged: stepResult.mergeOccurred,
