@@ -20,18 +20,20 @@ export function getPrimesUpTo(n: number): number[] {
 
 /**
  * ランダムな素数の積を生成（タイルの値）
- * 2～10の範囲の素数（2, 3, 5, 7）から選択し、その積を計算
+ * maxPrime以下の素数から2～10個選択し、その積を計算
  * 一つずつ積を計算し、9999を超えたら一つ前の値を使用
- * @param maxPrime 使用されていません（後方互換性のため保持）
+ * @param maxPrime 使用する素数の最大値
  * @param maxTileValue タイルの最大値（デフォルト: 9999）
  */
 export function generateTileValue(maxPrime: number, maxTileValue: number = 9999): number {
-  // 2～10の範囲の素数のみを使用
-  const availablePrimes = [2, 3, 5, 7];
+  // maxPrime以下の素数を取得
+  const availablePrimes = getPrimesUpTo(maxPrime);
+  if (availablePrimes.length === 0) return 2;
+  
   const MAX_VALUE = maxTileValue;
   
-  // ランダムに1～4個の素数を選択（重複を許す）
-  const count = Math.floor(Math.random() * 4) + 1;
+  // ランダムに2～10個の素数を選択（重複を許す）
+  const count = Math.floor(Math.random() * 9) + 2; // 2から10の範囲
   const selectedPrimes: number[] = [];
   
   for (let i = 0; i < count; i++) {
