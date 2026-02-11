@@ -333,7 +333,8 @@ export function processMerges(state: GameState): MergeResult {
   
   while (true) {
     // n連鎖の場合、2^(n-1)倍する (For n-chain, multiply by 2^(n-1))
-    const chainMultiplier = Math.pow(2, chainNumber - 1);
+    // chainNumberは1から始まるため、最小でも1倍となる
+    const chainMultiplier = Math.max(1, Math.pow(2, chainNumber - 1));
     
     // 2連鎖目以降は、累積スコアを渡す
     const stepResult = processOneMergeRound(currentState, chainMultiplier, accumulatedScore);
@@ -538,7 +539,8 @@ export function processOneMergeStep(
   reactingPairs: Array<{ tile1Id: number; tile2Id: number }>;
   newState: GameState;
 } {
-  const chainMultiplier = Math.pow(2, chainNumber - 1);
+  // chainNumberは1から始まるため、最小でも1倍となる
+  const chainMultiplier = Math.max(1, Math.pow(2, chainNumber - 1));
   const currentState = {
     ...state,
     board: state.board.map(row => [...row]),
