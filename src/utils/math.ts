@@ -20,42 +20,35 @@ export function getPrimesUpTo(n: number): number[] {
 
 /**
  * ランダムな素数の積を生成（タイルの値）
+ * 2～10の範囲の素数（2, 3, 5, 7）から選択し、その積を計算
+ * 一つずつ積を計算し、9999を超えたら一つ前の値を使用
  */
 export function generateTileValue(maxPrime: number, maxTileValue: number = 9999): number {
-  const primes = getPrimesUpTo(maxPrime);
-  if (primes.length === 0) return 2;
-  
+  // 2～10の範囲の素数のみを使用
+  const availablePrimes = [2, 3, 5, 7];
   const MAX_VALUE = maxTileValue;
   
-  // 1～max(primes.length, 3)個の素数をランダムに選択（重複を許す）
-  const maxCount = Math.max(primes.length, 3);
-  const count = Math.floor(Math.random() * maxCount) + 1;
+  // ランダムに1～4個の素数を選択（重複を許す）
+  const count = Math.floor(Math.random() * 4) + 1;
   const selectedPrimes: number[] = [];
   
   for (let i = 0; i < count; i++) {
-    const randomPrime = primes[Math.floor(Math.random() * primes.length)];
+    const randomPrime = availablePrimes[Math.floor(Math.random() * availablePrimes.length)];
     selectedPrimes.push(randomPrime);
   }
   
-  // 積を計算
+  // 一つずつ積を計算し、9999を超えたら一つ前の値を使用
   let value = 1;
+  let previousValue = 1;
+  
   for (const prime of selectedPrimes) {
+    previousValue = value;
     value *= prime;
-  }
-  
-  // maxTileValueを超えた場合、選んだ素数を一つずつ取り除く
-  let primesToUse = [...selectedPrimes];
-  while (value > MAX_VALUE && primesToUse.length > 0) {
-    primesToUse.pop(); // 末尾から素数を削除
-    value = 1;
-    for (const prime of primesToUse) {
-      value *= prime;
+    
+    // 9999を超えたら一つ前の値を返す
+    if (value > MAX_VALUE) {
+      return previousValue;
     }
-  }
-  
-  // すべての素数を取り除いた場合、または値がまだ大きい場合は最小値を返す
-  if (primesToUse.length === 0 || value > MAX_VALUE) {
-    return 2;
   }
   
   return value;
