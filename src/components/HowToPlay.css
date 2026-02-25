@@ -1,0 +1,185 @@
+.howtoplay-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.howtoplay-container {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease-out;
+}
+
+.howtoplay-container h2 {
+  margin: 0 0 20px 0;
+  font-size: 26px;
+  color: #333;
+  text-align: center;
+}
+
+.howtoplay-section {
+  margin-bottom: 24px;
+}
+
+.howtoplay-section h3 {
+  font-size: 17px;
+  color: #444;
+  margin: 0 0 8px 0;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.howtoplay-section p {
+  margin: 0 0 8px 0;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.howtoplay-section ul {
+  margin: 0 0 8px 0;
+  padding: 0 0 0 20px;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.howtoplay-section ul li {
+  margin-bottom: 6px;
+}
+
+.howtoplay-section em {
+  color: #667eea;
+  font-style: normal;
+}
+
+.howtoplay-formula {
+  background: #f8f9ff;
+  border: 1px solid #dde2ff;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 10px 0;
+}
+
+.formula-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #444;
+}
+
+.formula-row:last-child {
+  margin-bottom: 0;
+}
+
+.formula-label {
+  font-weight: 600;
+  color: #667eea;
+  min-width: 150px;
+}
+
+.formula-eq {
+  flex: 1;
+}
+
+.formula-final {
+  padding-top: 8px;
+  border-top: 1px solid #dde2ff;
+  font-weight: 600;
+}
+
+.formula-final .formula-label {
+  color: #e53e3e;
+}
+
+.formula-final .formula-eq {
+  color: #333;
+}
+
+.howtoplay-example {
+  background: #fffbf0;
+  border: 1px solid #f6e05e;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.8;
+}
+
+.howtoplay-example ol {
+  margin: 6px 0 0 0;
+  padding: 0 0 0 18px;
+}
+
+.howtoplay-example ol li {
+  margin-bottom: 4px;
+}
+
+.howtoplay-close-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.howtoplay-close-btn:hover {
+  background: #5568d3;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .howtoplay-container {
+    padding: 20px 16px;
+  }
+
+  .howtoplay-container h2 {
+    font-size: 22px;
+  }
+
+  .formula-label {
+    min-width: 100%;
+  }
+}
