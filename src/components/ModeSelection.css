@@ -172,3 +172,13 @@
   color: white;
   transform: translateY(-1px);
 }
+
+.howtoplay-link-btn {
+  border-color: #48bb78;
+  color: #48bb78;
+}
+
+.howtoplay-link-btn:hover {
+  background: #48bb78;
+  color: white;
+}
