@@ -146,3 +146,29 @@
     font-size: 20px;
   }
 }
+
+.ranking-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ranking-link-btn {
+  padding: 10px 20px;
+  background: transparent;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  color: #667eea;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ranking-link-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+}

@@ -31,6 +31,14 @@ export interface GameParams {
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
+export interface RankingEntry {
+  name: string;
+  score: number;
+  mode: GameMode;
+  date: string; // ISO string
+  level?: number; // challenge mode only
+}
+
 export interface MergeStep {
   removedTiles: number[];
   changedTiles: Map<number, number>; // id -> new value

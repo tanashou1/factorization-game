@@ -331,3 +331,72 @@
     grid-template-columns: 1fr;
   }
 }
+
+.btn-ranking {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-ranking:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+}
+
+.score-save-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.player-name-input {
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  width: 220px;
+  text-align: center;
+}
+
+.player-name-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn-save-score {
+  padding: 10px 24px;
+  font-size: 15px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-save-score:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.score-saved-msg {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.game-over-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.game-over-buttons button {
+  margin-top: 0;
+  flex: 1;
+}
