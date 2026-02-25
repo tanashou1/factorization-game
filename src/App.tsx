@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Board } from './components/Board';
 import { ModeSelection } from './components/ModeSelection';
+import { Ranking } from './components/Ranking';
 import { GameState, GameParams, Direction, GameMode, Tile } from './types';
 import {
   createInitialState,
@@ -14,6 +15,7 @@ import {
   hasNonPrimeTiles,
 } from './utils/gameLogic';
 import { getNextPrime } from './utils/math';
+import { addRanking } from './utils/ranking';
 import packageJson from '../package.json';
 import './App.css';
 
@@ -36,6 +38,9 @@ function App() {
   const [chainPosition, setChainPosition] = useState<{ row: number; col: number } | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [levelUpMessage, setLevelUpMessage] = useState<string | null>(null);
+  const [playerName, setPlayerName] = useState<string>('');
+  const [scoreSaved, setScoreSaved] = useState<boolean>(false);
+  const [showRanking, setShowRanking] = useState<boolean>(false);
 
   // Initialize game state when mode is selected
   useEffect(() => {
@@ -72,6 +77,8 @@ function App() {
     setChainCount(0);
     setChainPosition(null);
     setLevelUpMessage(null);
+    setScoreSaved(false);
+    setPlayerName('');
   };
 
   const handleBackToMenu = () => {
@@ -80,6 +87,8 @@ function App() {
     setChainCount(0);
     setChainPosition(null);
     setLevelUpMessage(null);
+    setScoreSaved(false);
+    setPlayerName('');
   };
 
   // Check for level up in challenge mode
@@ -318,6 +327,19 @@ function App() {
     }, 200);
   };
 
+  const handleSaveScore = () => {
+    if (!gameState || !gameMode || scoreSaved) return;
+    const name = playerName.trim() || 'ゲスト';
+    addRanking({
+      name,
+      score: gameState.score,
+      mode: gameMode,
+      date: new Date().toISOString(),
+      level: gameState.currentLevel,
+    });
+    setScoreSaved(true);
+  };
+
   const handleParamChange = (key: keyof GameParams, value: number) => {
     setParams({ ...params, [key]: value });
   };
@@ -387,11 +409,37 @@ function App() {
             <div className="final-score">
               最終スコア: {gameState.score}
             </div>
-            <button onClick={handleReset}>
-              🔄 リトライ
-            </button>
+            {!scoreSaved ? (
+              <div className="score-save-area">
+                <input
+                  type="text"
+                  placeholder="名前を入力（省略可）"
+                  value={playerName}
+                  onChange={e => setPlayerName(e.target.value)}
+                  maxLength={20}
+                  className="player-name-input"
+                />
+                <button className="btn-save-score" onClick={handleSaveScore}>
+                  📊 スコアを登録
+                </button>
+              </div>
+            ) : (
+              <p className="score-saved-msg">✅ スコアを登録しました！</p>
+            )}
+            <div className="game-over-buttons">
+              <button onClick={() => setShowRanking(true)}>
+                🏆 ランキング
+              </button>
+              <button onClick={handleReset}>
+                🔄 リトライ
+              </button>
+            </div>
           </div>
         </div>
+      )}
+
+      {showRanking && gameMode && (
+        <Ranking mode={gameMode} onClose={() => setShowRanking(false)} />
       )}
 
       <div className="controls">
@@ -490,6 +538,9 @@ function App() {
         <div className="button-group">
           <button className="btn btn-primary" onClick={handleReset}>
             🔄 リセット
+          </button>
+          <button className="btn btn-ranking" onClick={() => setShowRanking(true)}>
+            🏆 ランキング
           </button>
           <button className="btn btn-secondary" onClick={handleBackToMenu}>
             🏠 メニューに戻る

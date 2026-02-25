@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GameMode } from '../types';
+import { Ranking } from './Ranking';
 import './ModeSelection.css';
 
 interface ModeSelectionProps {
@@ -7,6 +8,8 @@ interface ModeSelectionProps {
 }
 
 export const ModeSelection: React.FC<ModeSelectionProps> = ({ onSelectMode }) => {
+  const [rankingMode, setRankingMode] = useState<GameMode | null>(null);
+
   return (
     <div className="mode-selection-overlay">
       <div className="mode-selection-container">
@@ -50,7 +53,20 @@ export const ModeSelection: React.FC<ModeSelectionProps> = ({ onSelectMode }) =>
             </ul>
           </button>
         </div>
+
+        <div className="ranking-links">
+          <button className="ranking-link-btn" onClick={() => setRankingMode('free')}>
+            📊 フリーモードのランキング
+          </button>
+          <button className="ranking-link-btn" onClick={() => setRankingMode('challenge')}>
+            📊 チャレンジモードのランキング
+          </button>
+        </div>
       </div>
+
+      {rankingMode && (
+        <Ranking mode={rankingMode} onClose={() => setRankingMode(null)} />
+      )}
     </div>
   );
 };

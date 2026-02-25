@@ -1,6 +1,6 @@
 {
   "name": "factorization-game",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "description": "素因数分解をベースにした数字パズルゲーム - A number puzzle game based on prime factorization",
   "main": "index.js",
   "scripts": {
