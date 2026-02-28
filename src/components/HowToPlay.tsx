@@ -5,6 +5,22 @@ interface HowToPlayProps {
   onClose: () => void;
 }
 
+// ゲームタイルを模したミニタイルコンポーネント
+const MiniTile: React.FC<{ value: number | string; color: string }> = ({ value, color }) => (
+  <div className="howtoplay-mini-tile" style={{ background: color }}>
+    {value}
+  </div>
+);
+
+// ミニボードコンポーネント（2×2グリッド）
+const MiniBoard: React.FC<{ cells: (React.ReactNode)[] }> = ({ cells }) => (
+  <div className="howtoplay-mini-board">
+    {cells.map((cell, i) => (
+      <div key={i} className="howtoplay-mini-cell">{cell}</div>
+    ))}
+  </div>
+);
+
 export const HowToPlay: React.FC<HowToPlayProps> = ({ onClose }) => {
   return (
     <div className="howtoplay-overlay" onClick={onClose}>
@@ -26,14 +42,59 @@ export const HowToPlay: React.FC<HowToPlayProps> = ({ onClose }) => {
             <li>
               <strong>タイルをスワイプ</strong>：タイルに触れてスワイプすると、
               そのタイルだけが指定方向へ移動します。
+              {/* タイル単体スワイプのイラスト */}
+              <div className="howtoplay-diagram">
+                <div className="diagram-scene">
+                  <MiniBoard cells={[
+                    null, null,
+                    <MiniTile value="7" color="linear-gradient(135deg, #64d964 0%, #32cd32 100%)" />, null
+                  ]} />
+                  <div className="diagram-arrow-right">→</div>
+                  <MiniBoard cells={[
+                    null, <MiniTile value="7" color="linear-gradient(135deg, #64d964 0%, #32cd32 100%)" />,
+                    null, null
+                  ]} />
+                </div>
+                <div className="diagram-caption">タイル「7」を右スワイプ → タイルだけ移動</div>
+              </div>
             </li>
             <li>
               <strong>空きマスをスワイプ</strong>：空きマスをスワイプすると、
               盤面上のすべてのタイルが一緒に移動します。
+              {/* 全タイル移動のイラスト */}
+              <div className="howtoplay-diagram">
+                <div className="diagram-scene">
+                  <MiniBoard cells={[
+                    <MiniTile value="2" color="linear-gradient(135deg, #ff6384 0%, #ff6384 100%)" />, null,
+                    null, <MiniTile value="3" color="linear-gradient(135deg, #1e90ff 0%, #1e90ff 100%)" />
+                  ]} />
+                  <div className="diagram-arrow-right">→</div>
+                  <MiniBoard cells={[
+                    null, <MiniTile value="2" color="linear-gradient(135deg, #ff6384 0%, #ff6384 100%)" />,
+                    null, <MiniTile value="3" color="linear-gradient(135deg, #1e90ff 0%, #1e90ff 100%)" />
+                  ]} />
+                </div>
+                <div className="diagram-caption">空きマスを右スワイプ → 全タイルが一緒に移動</div>
+              </div>
             </li>
             <li>
               <strong>空きマスをタップ</strong>：空きマスをタップすると、
               その位置にランダムな素数タイルが生成されます。
+              {/* タップで新タイル生成のイラスト */}
+              <div className="howtoplay-diagram">
+                <div className="diagram-scene">
+                  <MiniBoard cells={[
+                    <MiniTile value="2" color="linear-gradient(135deg, #ff6384 0%, #ff6384 100%)" />, null,
+                    null, null
+                  ]} />
+                  <div className="diagram-arrow-right">→</div>
+                  <MiniBoard cells={[
+                    <MiniTile value="2" color="linear-gradient(135deg, #ff6384 0%, #ff6384 100%)" />, null,
+                    <MiniTile value="5" color="linear-gradient(135deg, #ffce56 0%, #ffce56 100%)" />, null
+                  ]} />
+                </div>
+                <div className="diagram-caption">空きマスをタップ → その位置に素数タイルが出現</div>
+              </div>
             </li>
           </ul>
         </section>
@@ -46,13 +107,37 @@ export const HowToPlay: React.FC<HowToPlayProps> = ({ onClose }) => {
               <strong>約数関係（割り算）</strong>：小さいタイルが大きいタイルの約数の場合、
               大きいタイルの値が小さいタイルの値で割られます。小さいタイルは消滅し、
               大きいタイルの値が更新されます。値が 1 になった場合も消滅します。
-              <br />
-              <em>例：「6」と「2」が隣接 → 「3」が残る</em>
+              {/* 割り算反応のイラスト */}
+              <div className="howtoplay-diagram">
+                <div className="diagram-scene">
+                  <div className="diagram-tiles-row">
+                    <MiniTile value="6" color="linear-gradient(135deg, #ff6384 0%, #1e90ff 100%)" />
+                    <MiniTile value="2" color="linear-gradient(135deg, #ff6384 0%, #ff6384 100%)" />
+                  </div>
+                  <div className="diagram-arrow-right">→</div>
+                  <div className="diagram-tiles-row">
+                    <MiniTile value="3" color="linear-gradient(135deg, #1e90ff 0%, #1e90ff 100%)" />
+                  </div>
+                </div>
+                <div className="diagram-caption">「6」と「2」が隣接 → 6÷2＝「3」が残る</div>
+              </div>
             </li>
             <li>
               <strong>同じ値（消滅）</strong>：同じ値のタイルが隣接すると、両方とも消滅します。
-              <br />
-              <em>例：「5」と「5」が隣接 → 両方消える</em>
+              {/* 同値消滅のイラスト */}
+              <div className="howtoplay-diagram">
+                <div className="diagram-scene">
+                  <div className="diagram-tiles-row">
+                    <MiniTile value="5" color="linear-gradient(135deg, #ffce56 0%, #ffce56 100%)" />
+                    <MiniTile value="5" color="linear-gradient(135deg, #ffce56 0%, #ffce56 100%)" />
+                  </div>
+                  <div className="diagram-arrow-right">→</div>
+                  <div className="diagram-tiles-row diagram-empty-result">
+                    <span className="diagram-gone">消滅！</span>
+                  </div>
+                </div>
+                <div className="diagram-caption">「5」と「5」が隣接 → 両方消滅</div>
+              </div>
             </li>
           </ul>
           <p>

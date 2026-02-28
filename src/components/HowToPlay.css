@@ -150,6 +150,95 @@
   margin-bottom: 4px;
 }
 
+/* ミニタイルイラスト */
+.howtoplay-mini-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+/* ミニボード（2×2グリッド） */
+.howtoplay-mini-board {
+  display: grid;
+  grid-template-columns: repeat(2, 42px);
+  grid-template-rows: repeat(2, 42px);
+  gap: 4px;
+  background: #bbbbbb;
+  border-radius: 6px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.howtoplay-mini-cell {
+  background: #cccccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 図解コンテナ */
+.howtoplay-diagram {
+  margin: 10px 0 4px 0;
+  padding: 10px 12px;
+  background: #f8f9ff;
+  border: 1px solid #dde2ff;
+  border-radius: 10px;
+}
+
+.diagram-scene {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.diagram-tiles-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.diagram-arrow-right {
+  font-size: 20px;
+  font-weight: bold;
+  color: #667eea;
+  flex-shrink: 0;
+}
+
+.diagram-empty-result {
+  min-width: 38px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+}
+
+.diagram-gone {
+  font-size: 13px;
+  font-weight: bold;
+  color: #e53e3e;
+  padding: 4px 8px;
+  background: #fff5f5;
+  border: 1px dashed #e53e3e;
+  border-radius: 6px;
+}
+
+.diagram-caption {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #667eea;
+  font-style: italic;
+}
+
 .howtoplay-close-btn {
   display: block;
   width: 100%;
