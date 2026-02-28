@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">因数分解ゲーム</string>
+    <string name="title_activity_main">因数分解ゲーム</string>
+    <string name="package_name">com.tanashou1.factorizationgame</string>
+    <string name="custom_url_scheme">com.tanashou1.factorizationgame</string>
+</resources>

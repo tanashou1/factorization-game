@@ -11,6 +11,19 @@
 
 ---
 
+## [1.20.0] - 2026-02-28
+
+### Added
+- **Androidアプリ対応**: Capacitorを使用してAndroidアプリとしてビルド可能に
+  - `@capacitor/core`, `@capacitor/cli`, `@capacitor/android` を導入
+  - `capacitor.config.ts` を追加（appId: `com.tanashou1.factorizationgame`）
+  - `android/` ディレクトリにAndroidプロジェクトを生成
+- **ビルド設定改善**: `vite.config.ts` の `base` を環境変数 `VITE_BASE_URL` で切り替え可能に
+  - GitHub Pages: `VITE_BASE_URL=/factorization-game/`
+  - Android / ローカル: デフォルト `/`
+
+---
+
 ## [1.16.0] - 2026-02-11
 
 ### Changed

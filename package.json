@@ -1,6 +1,6 @@
 {
   "name": "factorization-game",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "description": "素因数分解をベースにした数字パズルゲーム - A number puzzle game based on prime factorization",
   "main": "index.js",
   "scripts": {
@@ -30,6 +30,9 @@
   },
   "homepage": "https://tanashou1.github.io/factorization-game/",
   "dependencies": {
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/cli": "^8.1.0",
+    "@capacitor/core": "^8.1.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
