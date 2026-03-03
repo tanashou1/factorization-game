@@ -3,5 +3,6 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/factorization-game/',
+  // GitHub Pages用: '/factorization-game/', Capacitor(Android)用: '/'
+  base: process.env.VITE_BASE_URL ?? '/',
 });
